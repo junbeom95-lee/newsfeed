@@ -11,13 +11,12 @@ import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_id")
     private Long postId;                //게시글 고유 ID
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,21 +29,22 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String content;             //게시글 내용
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> commentList = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();  //댓글 리스트
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private Group group;                //그룹 고유 ID
+    @JoinColumn(name = "community_id")
+    private Community community;        //커뮤니티 (그룹)
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;    //삭제 여부 및 시점
 
-    public Post(Profile profile, String title, String content, Group group) {
-        this.profile = profile;
-        this.title = title;
+
+    public Post(String content, String title, Profile profile, Community community) {
         this.content = content;
-        this.group = group;
+        this.title = title;
+        this.profile = profile;
+        this.community = community;
     }
 
     public void softDelete() {

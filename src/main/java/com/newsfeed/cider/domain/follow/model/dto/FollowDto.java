@@ -1,6 +1,7 @@
 package com.newsfeed.cider.domain.follow.model.dto;
 
 import com.newsfeed.cider.common.entity.Follow;
+import com.newsfeed.cider.common.entity.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
 public class FollowDto {
 
     private Long followId;
-    private Follow following;
-    private Follow follower;
+    private Profile following;
+    private Profile follower;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 

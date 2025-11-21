@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,6 +28,9 @@ public class Profile extends BaseEntity {
 
     @Column(nullable = false)
     private String password;            //비밀번호
+
+    @OneToMany(mappedBy = "group")
+    private List<Group> groupList  = new ArrayList<>();      //그룹 리스트
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;    //삭제 여부 및 시점

@@ -3,14 +3,12 @@ package com.newsfeed.cider.domain.community.controller;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.community.model.request.CreateCommunityRequest;
 import com.newsfeed.cider.domain.community.model.response.CreateCommunityResponse;
+import com.newsfeed.cider.domain.community.model.response.GetCommunityResponse;
 import com.newsfeed.cider.domain.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,10 +30,21 @@ public class CommunityController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
-    //TODO 그룹 조회 (PathVariable 있으면 선택 없으면 ALL)
-    //TODO Method : GET, URL : "/community"
-    //TODO PathVariable (require false) String communityName
-    //TODO ResponseBody List<GetCommunityResponse> (communityId, communityName, info)
+    /**
+     * 그룹 조회 페이징
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @return PagedModel<GetCommunityResponse>> (communityId, communityName, info, createdAt)
+     */
+    @GetMapping()
+    public ResponseEntity<CommonResponse<PagedModel<GetCommunityResponse>>> getCommunityPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        CommonResponse<PagedModel<GetCommunityResponse>> result = communityService.getCommunityPage(page, size);
+
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 
 
     //TODO 그룹 수정

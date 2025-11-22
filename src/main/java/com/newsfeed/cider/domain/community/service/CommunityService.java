@@ -1,15 +1,23 @@
 package com.newsfeed.cider.domain.community.service;
 
 import com.newsfeed.cider.common.entity.Community;
+import com.newsfeed.cider.common.enums.ExceptionCode;
+import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.community.model.dto.CommunityDto;
 import com.newsfeed.cider.domain.community.model.request.CreateCommunityRequest;
 import com.newsfeed.cider.domain.community.model.response.CreateCommunityResponse;
+import com.newsfeed.cider.domain.community.model.response.GetCommunityResponse;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -39,17 +47,28 @@ public class CommunityService {
         return new CommonResponse<>(HttpStatus.CREATED, CreateCommunityResponse.from(dto));
     }
 
-    //TODO 그룹 생성
-    //TODO Param CreateCommunityRequest request (communityName, info)
-    //TODO Return CommonResponse<CreateCommunityResponse> (communityId, communityName, info)
+    /**
+     * 그룹 조회 페이징
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @return PagedModel<GetCommunityResponse> (communityId, communityName, info, createdAt)
+     */
+    @Transactional(readOnly = true)
+    public CommonResponse<PagedModel<GetCommunityResponse>> getCommunityPage(int page, int size) {
 
+        Sort sort = Sort.by("communityName").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-    //TODO 그룹 조회 (PathVariable 있으면 선택 없으면 ALL)
-    //TODO Param String communityName
-    //TODO communityName == null -> ALL
-    //TODO communityName != null -> one
-    //TODO Return CommonResponse<List<GetCommunityResponse>> (communityId, communityName, info, createdAt, modifiedAt)
+        Page<Community> communityPage = communityRepository.findAll(pageable);
 
+        Page<CommunityDto> dtoPage = communityPage.map(CommunityDto::from);
+
+        Page<GetCommunityResponse> responsePage = dtoPage.map(GetCommunityResponse::from);
+
+        PagedModel<GetCommunityResponse> response = new PagedModel<>(responsePage);
+
+        return new CommonResponse<>(HttpStatus.OK, response);
+    }
 
     //TODO 그룹 수정
     //TODO Param String communityName, UpdateCommunityRequest request (communityName, info)

@@ -16,11 +16,12 @@ public enum ExceptionCode {
     NOT_FOUND_POST(HttpStatus.BAD_REQUEST, "찾으시는 게시글이없습니다"),
 
     //댓글
-    NOT_FOUND_COMMENT(HttpStatus.BAD_REQUEST, "댓글이 존재하지 않습니다");
+    NOT_FOUND_COMMENT(HttpStatus.BAD_REQUEST, "댓글이 존재하지 않습니다"),
 
     //팔로우
 
-    //그룹
+    //커뮤니티 그룹
+    EXIST_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하는 커뮤니티입니다");
 
     private final HttpStatus status;
     private final String message;

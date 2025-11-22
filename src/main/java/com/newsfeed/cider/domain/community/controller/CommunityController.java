@@ -22,7 +22,7 @@ public class CommunityController {
     /**
      * 커뮤니티 그룹 생성
      * @param request CreateCommunityRequest (communityName, info)
-     * @return CreateCommunityResponse (communityId, communityName, info)
+     * @return CreateCommunityResponse (communityId, communityName, info, createdAt)
      */
     @PostMapping()
     public ResponseEntity<CommonResponse<CreateCommunityResponse>> create(@RequestBody CreateCommunityRequest request) {

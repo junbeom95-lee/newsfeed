@@ -18,8 +18,17 @@ public class CommunityService {
 
     private final CommunityRepository communityRepository;
 
-
+    /**
+     * 그룹 생성
+     * @param request CreateCommunityRequest (communityName, info)
+     * @return CommonResponse<CreateCommunityResponse> (communityId, communityName, info, createdAt)
+     * @throws CustomException EXIST_COMMUNITY
+     */
     public CommonResponse<CreateCommunityResponse> create(CreateCommunityRequest request) {
+
+        boolean existence = communityRepository.existsByCommunityName(request.getCommunityName());
+
+        if(existence) throw new CustomException(ExceptionCode.EXIST_COMMUNITY);
 
         Community community = new Community(request.getCommunityName(), request.getInfo());
 

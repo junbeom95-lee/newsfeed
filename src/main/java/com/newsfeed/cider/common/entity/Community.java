@@ -1,5 +1,6 @@
 package com.newsfeed.cider.common.entity;
 
+import com.newsfeed.cider.domain.community.model.request.UpdateCommunityRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,6 +29,11 @@ public class Community extends BaseEntity {
     public Community(String communityName, String info) {
         this.communityName = communityName;
         this.info = info;
+    }
+
+    public void update(UpdateCommunityRequest request) {
+        this.communityName = request.getCommunityName() != null ? request.getCommunityName() : this.communityName;
+        this.info = request.getInfo() != null ? request.getInfo() : this.info;
     }
 
     public void softDelete() {

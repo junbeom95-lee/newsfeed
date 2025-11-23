@@ -2,8 +2,10 @@ package com.newsfeed.cider.domain.community.controller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.community.model.request.CreateCommunityRequest;
+import com.newsfeed.cider.domain.community.model.request.UpdateCommunityRequest;
 import com.newsfeed.cider.domain.community.model.response.CreateCommunityResponse;
 import com.newsfeed.cider.domain.community.model.response.GetCommunityResponse;
+import com.newsfeed.cider.domain.community.model.response.UpdateCommunityResponse;
 import com.newsfeed.cider.domain.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
@@ -59,11 +61,21 @@ public class CommunityController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    /**
+     * 그룹 수정
+     * @param communityName 커뮤니티 그룹 이름
+     * @param request UpdateCommunityRequest (communityName, info)
+     * @return UpdateCommunityResponse (communityId, communityName, info, createdAt)
+     */
+    @PutMapping("/{communityName}")
+    public ResponseEntity<CommonResponse<UpdateCommunityResponse>> update(
+            @PathVariable String communityName,
+            @RequestBody UpdateCommunityRequest request) {
 
-    //TODO 그룹 수정
-    //TODO Method : PUT, URL : "/community"
-    //TODO PathVariable String communityName, RequestBody(communityName, info)
-    //TODO ResponseBody UpdateCommunityResponse (communityId, communityName, info)
+        CommonResponse<UpdateCommunityResponse> result = communityService.update(communityName, request);
+
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 
 
     //TODO 그룹 삭제

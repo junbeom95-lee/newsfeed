@@ -6,8 +6,10 @@ import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.community.model.dto.CommunityDto;
 import com.newsfeed.cider.domain.community.model.request.CreateCommunityRequest;
+import com.newsfeed.cider.domain.community.model.request.UpdateCommunityRequest;
 import com.newsfeed.cider.domain.community.model.response.CreateCommunityResponse;
 import com.newsfeed.cider.domain.community.model.response.GetCommunityResponse;
+import com.newsfeed.cider.domain.community.model.response.UpdateCommunityResponse;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -73,7 +75,7 @@ public class CommunityService {
     /**
      * 그룹 단건 조회
      * @param communityName 그룹 이름
-     * @return
+     * @return GetCommunityResponse (communityId, communityName, info, createdAt)
      */
     @Transactional(readOnly = true)
     public CommonResponse<GetCommunityResponse> getOneCommunity(String communityName) {
@@ -88,11 +90,25 @@ public class CommunityService {
         return new CommonResponse<>(HttpStatus.OK, response);
     }
 
-    //TODO 그룹 수정
-    //TODO Param String communityName, UpdateCommunityRequest request (communityName, info)
-    //TODO ResponseBody UpdateCommunityResponse (communityId, communityName, info)
-    //TODO Return CommonResponse<UpdateCommunityResponse> (communityId, communityName, info, createdAt, modifiedAt)
+    /**
+     * 그룹 수정
+     * @param communityName 그룹 이름
+     * @param request UpdateCommunityRequest (communityName, info)
+     * @return UpdateCommunityResponse (communityId, communityName, info, createdAt)
+     */
+    public CommonResponse<UpdateCommunityResponse> update(String communityName, UpdateCommunityRequest request) {
 
+        Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
+                () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
+
+        community.update(request);
+
+        CommunityDto dto = CommunityDto.from(community);
+
+        UpdateCommunityResponse response = UpdateCommunityResponse.from(dto);
+
+        return new CommonResponse<>(HttpStatus.OK, response);
+    }
 
     //TODO 그룹 삭제
     //TODO Method : DELETE, URL : "/community"

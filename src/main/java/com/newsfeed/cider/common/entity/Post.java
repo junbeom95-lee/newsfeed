@@ -44,8 +44,17 @@ public class Post extends BaseEntity {
         this.community = community;
     }
 
+    // Post 제목 수정
+    public void updatePostTitle(String title) {
+        this.title = title;
+    }
+
+    // Post 내용 수정
+    public void updatePostContent(String content) {
+        this.content = content;
+    }
+
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
     }
-
 }

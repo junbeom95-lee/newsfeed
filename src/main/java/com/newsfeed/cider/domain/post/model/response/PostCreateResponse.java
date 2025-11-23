@@ -1,5 +1,6 @@
 package com.newsfeed.cider.domain.post.model.response;
 
+import com.newsfeed.cider.common.entity.Post;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -23,5 +24,15 @@ public class PostCreateResponse {
         this.modifiedAt = modifiedAt;
     }
 
+    public static PostCreateResponse from(Post post) {
+        return new PostCreateResponse(
+                post.getPostId(),
+                post.getProfile().getName(),
+                post.getTitle(),
+                post.getContent(),
+                post.getCreatedAt(),
+                post.getModifiedAt()
+        );
+    }
 
 }

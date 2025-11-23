@@ -77,9 +77,16 @@ public class CommunityController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    /**
+     * 그룹 삭제
+     * @param communityName 커뮤니티 그룹 이름
+     * @return OK, null
+     */
+    @DeleteMapping("/{communityName}")
+    public ResponseEntity<CommonResponse<Void>> delete(@PathVariable String communityName) {
 
-    //TODO 그룹 삭제
-    //TODO Method : DELETE, URL : "/community"
-    //TODO PathVariable String communityName
-    //TODO ResponseBody NO_CONTENT
+        CommonResponse<Void> result = communityService.delete(communityName);
+
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 }

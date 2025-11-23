@@ -15,4 +15,6 @@ public interface CommunityRepository extends JpaRepository<Community,Long> {
     Page<Community> findAll(@NonNull Pageable pageable);
 
     Optional<Community> findByCommunityName(String communityName);
+
+    void deleteByCommunityName(String communityName);
 }

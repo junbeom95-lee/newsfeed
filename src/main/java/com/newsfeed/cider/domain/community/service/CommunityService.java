@@ -110,8 +110,21 @@ public class CommunityService {
         return new CommonResponse<>(HttpStatus.OK, response);
     }
 
-    //TODO 그룹 삭제
-    //TODO Method : DELETE, URL : "/community"
-    //TODO Param String communityName
-    //TODO Return CommonResponse<Void>
+    /**
+     * 그룹 삭제
+     * @param communityName 그룹 이름
+     * @return CommonResponse<Void> OK, null
+     */
+    public CommonResponse<Void> delete(String communityName) {
+
+        boolean existence = communityRepository.existsByCommunityName(communityName);
+
+        if (existence) {
+            communityRepository.deleteByCommunityName(communityName);
+
+            return new CommonResponse<>(HttpStatus.OK, null);
+        }
+
+        throw new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY);
+    }
 }

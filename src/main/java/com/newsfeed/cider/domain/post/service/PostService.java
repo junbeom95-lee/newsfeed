@@ -48,14 +48,14 @@ public class PostService {
     }
 
     @Transactional
-    public PostUpdateResponse updateService(@Valid PostUpdateRequest request, Long loginId) {
+    public PostUpdateResponse updateService(@Valid PostUpdateRequest request, Long loginId, Long postId) {
 
         validateLogin(loginId);
 
-        Post post = postRepository.findByPostId(loginId)
+        Post post = postRepository.findByPostId(postId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_POST));
 
-        validateAuthorization(loginId, post.getProfile().getProfileId());
+        validateAuthorization(loginId, postId);
 
         // 제목 수정
         if (request.getTitle() != null) {
@@ -68,6 +68,14 @@ public class PostService {
         }
 
         return PostUpdateResponse.from(post);
+    }
+
+    @Transactional
+    public void deletePost(Long loginId, Long postId) {
+        validateLogin(loginId);
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new CustomException(NOT_FOUND_POST));
+        validateAuthorization(loginId, postId);
+        post.softDelete();
     }
 
     // login 여부 검증

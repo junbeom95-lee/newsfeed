@@ -29,12 +29,19 @@ public class PostController {
                 .body(new CommonResponse<>(HttpStatus.CREATED, postService.savePost(request, loginId)));
     }
 
-    @PutMapping
+    @PutMapping("/{postId}")
     public ResponseEntity<CommonResponse<PostUpdateResponse>> updatePost(
-            @Valid @RequestBody PostUpdateRequest request, HttpSession session
+            @PathVariable Long postId, @Valid @RequestBody PostUpdateRequest request, HttpSession session
     ) {
         Long loginId = (Long) session.getAttribute("loginId");
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new CommonResponse<>(HttpStatus.OK, postService.updateService(request, loginId)));
+                .body(new CommonResponse<>(HttpStatus.OK, postService.updateService(request, loginId, postId)));
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<CommonResponse> deletePost(@PathVariable Long postId, HttpSession session) {
+        Long loginId = (Long) session.getAttribute("loginId");
+        postService.deletePost(loginId, postId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

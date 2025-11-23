@@ -21,7 +21,8 @@ public enum ExceptionCode {
     //팔로우
 
     //커뮤니티 그룹
-    EXIST_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하는 커뮤니티입니다");
+    EXIST_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하는 커뮤니티입니다"),
+    NOT_FOUND_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하지 않은 커뮤니티입니다");
 
     private final HttpStatus status;
     private final String message;

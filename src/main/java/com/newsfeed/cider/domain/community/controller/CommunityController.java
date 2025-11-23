@@ -46,6 +46,19 @@ public class CommunityController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    /**
+     * 그룹 단건 조회
+     * @param communityName 커뮤니티 그룹 이름
+     * @return GetCommunityResponse (communityId, communityName, info, createdAt)
+     */
+    @GetMapping("/{communityName}")
+    public ResponseEntity<CommonResponse<GetCommunityResponse>> getOneCommunity(@PathVariable String communityName) {
+
+        CommonResponse<GetCommunityResponse> result = communityService.getOneCommunity(communityName);
+
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
 
     //TODO 그룹 수정
     //TODO Method : PUT, URL : "/community"

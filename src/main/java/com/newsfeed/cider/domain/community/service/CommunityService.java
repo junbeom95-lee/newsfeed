@@ -70,6 +70,24 @@ public class CommunityService {
         return new CommonResponse<>(HttpStatus.OK, response);
     }
 
+    /**
+     * 그룹 단건 조회
+     * @param communityName 그룹 이름
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public CommonResponse<GetCommunityResponse> getOneCommunity(String communityName) {
+
+        Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
+                () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
+
+        CommunityDto dto = CommunityDto.from(community);
+
+        GetCommunityResponse response = GetCommunityResponse.from(dto);
+
+        return new CommonResponse<>(HttpStatus.OK, response);
+    }
+
     //TODO 그룹 수정
     //TODO Param String communityName, UpdateCommunityRequest request (communityName, info)
     //TODO ResponseBody UpdateCommunityResponse (communityId, communityName, info)

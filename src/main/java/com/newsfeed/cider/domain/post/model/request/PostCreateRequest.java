@@ -1,6 +1,5 @@
 package com.newsfeed.cider.domain.post.model.request;
 
-import com.newsfeed.cider.common.entity.Community;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 

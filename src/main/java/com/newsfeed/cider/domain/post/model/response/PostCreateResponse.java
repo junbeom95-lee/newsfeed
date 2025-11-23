@@ -24,6 +24,7 @@ public class PostCreateResponse {
         this.modifiedAt = modifiedAt;
     }
 
+    // Post를 PostCreateResponse로 만들어주는 정적 팩토리 메서드
     public static PostCreateResponse from(Post post) {
         return new PostCreateResponse(
                 post.getPostId(),
@@ -34,5 +35,4 @@ public class PostCreateResponse {
                 post.getModifiedAt()
         );
     }
-
 }

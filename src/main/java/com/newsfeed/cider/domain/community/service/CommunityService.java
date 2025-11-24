@@ -4,7 +4,6 @@ import com.newsfeed.cider.common.entity.Community;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.domain.community.model.dto.CommunityDto;
 import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
 import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
 import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
@@ -44,9 +43,7 @@ public class CommunityService {
 
         Community saved = communityRepository.save(community);
 
-        CommunityDto dto = CommunityDto.from(saved);
-
-        return new CommonResponse<>(HttpStatus.CREATED, CommunityCreateResponse.from(dto));
+        return new CommonResponse<>(HttpStatus.CREATED, CommunityCreateResponse.from(saved));
     }
 
     /**
@@ -63,9 +60,7 @@ public class CommunityService {
 
         Page<Community> communityPage = communityRepository.findAll(pageable);
 
-        Page<CommunityDto> dtoPage = communityPage.map(CommunityDto::from);
-
-        Page<CommunityGetResponse> responsePage = dtoPage.map(CommunityGetResponse::from);
+        Page<CommunityGetResponse> responsePage = communityPage.map(CommunityGetResponse::from);
 
         PagedModel<CommunityGetResponse> response = new PagedModel<>(responsePage);
 
@@ -83,9 +78,7 @@ public class CommunityService {
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
-        CommunityDto dto = CommunityDto.from(community);
-
-        CommunityGetResponse response = CommunityGetResponse.from(dto);
+        CommunityGetResponse response = CommunityGetResponse.from(community);
 
         return new CommonResponse<>(HttpStatus.OK, response);
     }
@@ -103,9 +96,7 @@ public class CommunityService {
 
         community.update(request);
 
-        CommunityDto dto = CommunityDto.from(community);
-
-        CommunityUpdateResponse response = CommunityUpdateResponse.from(dto);
+        CommunityUpdateResponse response = CommunityUpdateResponse.from(community);
 
         return new CommonResponse<>(HttpStatus.OK, response);
     }

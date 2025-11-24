@@ -8,6 +8,8 @@ public enum ValidCode { //Valid 오류 메시지 Enum
     //프로필
 
     //게시글
+    NOT_BLANK_POST_TITLE("title", "NotBlank", "제목을 작성하지 않았습니다."),
+    NOT_BLANK_POST_CONTENT("content", "NotBlank","내용을 작성하지 않았습니다."),
 
     //댓글
 

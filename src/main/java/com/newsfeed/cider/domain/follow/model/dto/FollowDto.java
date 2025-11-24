@@ -16,16 +16,12 @@ public class FollowDto {
     private Long followId;
     private Profile following;
     private Profile follower;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
 
     public static FollowDto from(Follow follow) {
         return new FollowDto(
                 follow.getFollowId(),
-                follow.getFollowing(),
-                follow.getFollower(),
-                follow.getCreatedAt(),
-                follow.getModifiedAt()
+                follow.getFollowee(),
+                follow.getFollower()
         );
     }
 }

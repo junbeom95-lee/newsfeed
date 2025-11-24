@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.newsfeed.cider.common.enums.ExceptionCode.FORBIDDEN;
 import static com.newsfeed.cider.common.enums.ExceptionCode.NOT_FOUND_POST;
+import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
+import static com.newsfeed.cider.common.util.AuthManager.validateLogin;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    // Post 생성
     @Transactional
     public PostCreateResponse savePost(@Valid PostCreateRequest request, Long loginId) {
 
@@ -47,6 +50,7 @@ public class PostService {
         return PostCreateResponse.from(savedPost);
     }
 
+    // Post 수정
     @Transactional
     public PostUpdateResponse updateService(@Valid PostUpdateRequest request, Long loginId, Long postId) {
 
@@ -70,27 +74,13 @@ public class PostService {
         return PostUpdateResponse.from(post);
     }
 
+    // Post 삭제
     @Transactional
     public void deletePost(Long loginId, Long postId) {
         validateLogin(loginId);
         Post post = postRepository.findByPostId(postId).orElseThrow(() -> new CustomException(NOT_FOUND_POST));
         validateAuthorization(loginId, postId);
         post.softDelete();
-    }
-
-    // login 여부 검증
-    private void validateLogin(Long loginUserId) {
-        if (loginUserId == null) {
-            throw new CustomException(ExceptionCode.FORBIDDEN);
-        }
-    }
-
-    // login한 profile이 권한을 가지고 있는지 검증
-    public void validateAuthorization(Long loginUserId, Long userId) {
-        boolean isSameUser = userId.equals(loginUserId);
-        if (!isSameUser) {
-            throw new CustomException(FORBIDDEN);
-        }
     }
 
     // 아직 구현되지 않은 메서드 , CommunityService에 구현 예정, 컴파일 에러 방지를 위해 선언만 해둠

@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCommunityResponse {
+public class CommunityCreateResponse {
     private Long communityId;
     private String communityName;
     private String info;
     private LocalDateTime createdAt;
 
-    public static CreateCommunityResponse from(CommunityDto dto) {
-        return new CreateCommunityResponse(
+    public static CommunityCreateResponse from(CommunityDto dto) {
+        return new CommunityCreateResponse(
                 dto.getCommunityId(),
                 dto.getCommunityName(),
                 dto.getInfo(),

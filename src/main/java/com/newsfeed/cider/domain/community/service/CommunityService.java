@@ -5,11 +5,11 @@ import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.community.model.dto.CommunityDto;
-import com.newsfeed.cider.domain.community.model.request.CreateCommunityRequest;
-import com.newsfeed.cider.domain.community.model.request.UpdateCommunityRequest;
-import com.newsfeed.cider.domain.community.model.response.CreateCommunityResponse;
-import com.newsfeed.cider.domain.community.model.response.GetCommunityResponse;
-import com.newsfeed.cider.domain.community.model.response.UpdateCommunityResponse;
+import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
+import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
+import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
+import com.newsfeed.cider.domain.community.model.response.CommunityGetResponse;
+import com.newsfeed.cider.domain.community.model.response.CommunityUpdateResponse;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,7 +34,7 @@ public class CommunityService {
      * @return CommonResponse<CreateCommunityResponse> (communityId, communityName, info, createdAt)
      * @throws CustomException EXIST_COMMUNITY
      */
-    public CommonResponse<CreateCommunityResponse> create(CreateCommunityRequest request) {
+    public CommonResponse<CommunityCreateResponse> create(CommunityCreateRequest request) {
 
         boolean existence = communityRepository.existsByCommunityName(request.getCommunityName());
 
@@ -46,7 +46,7 @@ public class CommunityService {
 
         CommunityDto dto = CommunityDto.from(saved);
 
-        return new CommonResponse<>(HttpStatus.CREATED, CreateCommunityResponse.from(dto));
+        return new CommonResponse<>(HttpStatus.CREATED, CommunityCreateResponse.from(dto));
     }
 
     /**
@@ -56,7 +56,7 @@ public class CommunityService {
      * @return PagedModel<GetCommunityResponse> (communityId, communityName, info, createdAt)
      */
     @Transactional(readOnly = true)
-    public CommonResponse<PagedModel<GetCommunityResponse>> getCommunityPage(int page, int size) {
+    public CommonResponse<PagedModel<CommunityGetResponse>> getCommunityPage(int page, int size) {
 
         Sort sort = Sort.by("communityName").ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -65,9 +65,9 @@ public class CommunityService {
 
         Page<CommunityDto> dtoPage = communityPage.map(CommunityDto::from);
 
-        Page<GetCommunityResponse> responsePage = dtoPage.map(GetCommunityResponse::from);
+        Page<CommunityGetResponse> responsePage = dtoPage.map(CommunityGetResponse::from);
 
-        PagedModel<GetCommunityResponse> response = new PagedModel<>(responsePage);
+        PagedModel<CommunityGetResponse> response = new PagedModel<>(responsePage);
 
         return new CommonResponse<>(HttpStatus.OK, response);
     }
@@ -78,14 +78,14 @@ public class CommunityService {
      * @return GetCommunityResponse (communityId, communityName, info, createdAt)
      */
     @Transactional(readOnly = true)
-    public CommonResponse<GetCommunityResponse> getOneCommunity(String communityName) {
+    public CommonResponse<CommunityGetResponse> getOneCommunity(String communityName) {
 
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
         CommunityDto dto = CommunityDto.from(community);
 
-        GetCommunityResponse response = GetCommunityResponse.from(dto);
+        CommunityGetResponse response = CommunityGetResponse.from(dto);
 
         return new CommonResponse<>(HttpStatus.OK, response);
     }
@@ -96,7 +96,7 @@ public class CommunityService {
      * @param request UpdateCommunityRequest (communityName, info)
      * @return UpdateCommunityResponse (communityId, communityName, info, createdAt)
      */
-    public CommonResponse<UpdateCommunityResponse> update(String communityName, UpdateCommunityRequest request) {
+    public CommonResponse<CommunityUpdateResponse> update(String communityName, CommunityUpdateRequest request) {
 
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
@@ -105,7 +105,7 @@ public class CommunityService {
 
         CommunityDto dto = CommunityDto.from(community);
 
-        UpdateCommunityResponse response = UpdateCommunityResponse.from(dto);
+        CommunityUpdateResponse response = CommunityUpdateResponse.from(dto);
 
         return new CommonResponse<>(HttpStatus.OK, response);
     }

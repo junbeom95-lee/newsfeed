@@ -1,12 +1,13 @@
 package com.newsfeed.cider.domain.community.controller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.domain.community.model.request.CreateCommunityRequest;
-import com.newsfeed.cider.domain.community.model.request.UpdateCommunityRequest;
-import com.newsfeed.cider.domain.community.model.response.CreateCommunityResponse;
-import com.newsfeed.cider.domain.community.model.response.GetCommunityResponse;
-import com.newsfeed.cider.domain.community.model.response.UpdateCommunityResponse;
+import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
+import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
+import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
+import com.newsfeed.cider.domain.community.model.response.CommunityGetResponse;
+import com.newsfeed.cider.domain.community.model.response.CommunityUpdateResponse;
 import com.newsfeed.cider.domain.community.service.CommunityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,9 @@ public class CommunityController {
      * @return CreateCommunityResponse (communityId, communityName, info, createdAt)
      */
     @PostMapping()
-    public ResponseEntity<CommonResponse<CreateCommunityResponse>> create(@RequestBody CreateCommunityRequest request) {
+    public ResponseEntity<CommonResponse<CommunityCreateResponse>> create(@RequestBody @Valid CommunityCreateRequest request) {
 
-        CommonResponse<CreateCommunityResponse> result = communityService.create(request);
+        CommonResponse<CommunityCreateResponse> result = communityService.create(request);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -39,11 +40,11 @@ public class CommunityController {
      * @return PagedModel<GetCommunityResponse>> (communityId, communityName, info, createdAt)
      */
     @GetMapping()
-    public ResponseEntity<CommonResponse<PagedModel<GetCommunityResponse>>> getCommunityPage(
+    public ResponseEntity<CommonResponse<PagedModel<CommunityGetResponse>>> getCommunityPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        CommonResponse<PagedModel<GetCommunityResponse>> result = communityService.getCommunityPage(page, size);
+        CommonResponse<PagedModel<CommunityGetResponse>> result = communityService.getCommunityPage(page, size);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -54,9 +55,9 @@ public class CommunityController {
      * @return GetCommunityResponse (communityId, communityName, info, createdAt)
      */
     @GetMapping("/{communityName}")
-    public ResponseEntity<CommonResponse<GetCommunityResponse>> getOneCommunity(@PathVariable String communityName) {
+    public ResponseEntity<CommonResponse<CommunityGetResponse>> getOneCommunity(@PathVariable String communityName) {
 
-        CommonResponse<GetCommunityResponse> result = communityService.getOneCommunity(communityName);
+        CommonResponse<CommunityGetResponse> result = communityService.getOneCommunity(communityName);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -68,11 +69,11 @@ public class CommunityController {
      * @return UpdateCommunityResponse (communityId, communityName, info, createdAt)
      */
     @PutMapping("/{communityName}")
-    public ResponseEntity<CommonResponse<UpdateCommunityResponse>> update(
+    public ResponseEntity<CommonResponse<CommunityUpdateResponse>> update(
             @PathVariable String communityName,
-            @RequestBody UpdateCommunityRequest request) {
+            @RequestBody CommunityUpdateRequest request) {
 
-        CommonResponse<UpdateCommunityResponse> result = communityService.update(communityName, request);
+        CommonResponse<CommunityUpdateResponse> result = communityService.update(communityName, request);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }

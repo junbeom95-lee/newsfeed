@@ -4,11 +4,13 @@ import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.post.model.request.PostCreateRequest;
 import com.newsfeed.cider.domain.post.model.request.PostUpdateRequest;
 import com.newsfeed.cider.domain.post.model.response.PostCreateResponse;
+import com.newsfeed.cider.domain.post.model.response.PostGetResponse;
 import com.newsfeed.cider.domain.post.model.response.PostUpdateResponse;
 import com.newsfeed.cider.domain.post.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,21 @@ public class PostController {
         Long loginId = (Long) session.getAttribute("loginId");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CommonResponse<>(HttpStatus.CREATED, postService.savePost(request, loginId)));
+    }
+
+    // 전체 Post 조회
+    @GetMapping
+    public ResponseEntity<CommonResponse<Page<PostGetResponse>>> getPost(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getAllPost(page, size)));
+    }
+
+    // 단건 Post 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<CommonResponse<PostGetResponse>> getPost(@PathVariable Long postId) {
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getOnePost(postId)));
     }
 
     // Post 수정

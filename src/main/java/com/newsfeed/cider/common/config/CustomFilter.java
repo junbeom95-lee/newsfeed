@@ -42,6 +42,7 @@ public class CustomFilter extends OncePerRequestFilter {
 
                 if (loginUser != null) {
 
+                    //TEST용 Log id와 이메일 찍어보기 ** 지우셔도 좋습니다 **
                     log.info("CustomFilter doFilterInternal login  id : {} email {}", loginUser.getUserId(), loginUser.getEmail());
 
                     //다음 요청으로 넘어갈 수 있게 사용하는 메서드
@@ -83,7 +84,7 @@ public class CustomFilter extends OncePerRequestFilter {
     private void makeResponse(HttpServletResponse response) throws IOException {
 
         //세션이 없거나 loginUser가 없으면 응답을 만들어서 줘야함
-        CustomException exception = new CustomException(ExceptionCode.FORBIDDEN);
+        CustomException exception = new CustomException(ExceptionCode.NOT_LOGGED_IN);
         CommonResponse<String> result = new CommonResponse<>(exception.getExceptionCode().getStatus(), exception.getMessage());
 
         //응답 설정 : HttpStatus, ContentType 및 인코딩

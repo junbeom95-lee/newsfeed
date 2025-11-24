@@ -43,16 +43,25 @@ public class ProfileService {
     }
 
 
-    public ProfileUpdateResponse updateProfile(long nowLoginProfileId, long profileId, ProfileUpdateRequest request){
-        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+    public ProfileUpdateResponse updateProfile(long nowLoginProfileId, long profileId, ProfileUpdateRequest request) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
         isOwner(nowLoginProfileId, profile.getProfileId());
 
-        profile.update(request);
-        profileRepository.save(profile);
-        ProfileDto dto = ProfileDto.from(profile);
+        profile.updateProfileInfo(request.getProfilename(), request.getEmail());
 
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+            profile.updatePassword(encodedPassword);
+        }
+
+        profileRepository.save(profile);
+
+        ProfileDto dto = ProfileDto.from(profile);
         return ProfileUpdateResponse.from(dto);
     }
+
 
 
     public ProfileDeleteResponse deleteProfile(long nowLoginId, long profileId){

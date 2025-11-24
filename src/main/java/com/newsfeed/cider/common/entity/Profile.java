@@ -37,10 +37,15 @@ public class Profile extends BaseEntity {
         this.password = password;
     }
 
-    public void update(ProfileUpdateRequest request){
-        this.name = request.getProfilename() != null ? request.getProfilename() : this.name;
-        this.password = request.getPassword() != null ? request.getPassword() : this.password;
+    public void updateProfileInfo(String profilename, String email) {
+        this.name = profilename;
+        this.email = email;
     }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
 
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();

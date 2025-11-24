@@ -55,8 +55,8 @@ public class FollowService {
     }
     // - GetFollowingList(Read)
     @Transactional(readOnly = true)
-    public List<SummaryProfileResponse> getFollowingList(Long profileId) {
-        Profile follower = findProById(profileId);
+    public List<SummaryProfileResponse> getFollowingList(Long followerId) {
+        Profile follower = findProById(followerId);
 
         List<Follow> follows = followRepository.findAllByFollower(follower);
 
@@ -69,10 +69,10 @@ public class FollowService {
     }
     // - GetFolloweeList(Read)
     @Transactional(readOnly = true)
-    public List<SummaryProfileResponse> getFollowerList(Long profileId) {
-        Profile followee = findProById(profileId);
+    public List<SummaryProfileResponse> getFollowerList(Long followeeId) {
+        Profile followee = findProById(followeeId);
 
-        List<Follow> follows = followRepository.findAllByFollower(followee);
+        List<Follow> follows = followRepository.findAllByFollowee(followee);
 
         return follows.stream()
                 .map(f -> new SummaryProfileResponse(

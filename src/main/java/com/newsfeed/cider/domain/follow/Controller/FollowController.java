@@ -21,6 +21,7 @@ public class FollowController {
 
 // - Methods
     // - Follow
+    @PostMapping("/{followeeId}/follow")
     public ResponseEntity<CommonResponse<FollowResponse>> follow(
             @SessionAttribute(name = "loginUser") SessionUser loginUser,
             @PathVariable Long followeeId) {
@@ -32,6 +33,20 @@ public class FollowController {
 
         return ResponseEntity.status(response.getStatus()).body(response);
 
-        // - Get Followings
     }
+    // - UnFollow
+    @DeleteMapping("/{followeeId}/follow")
+    public ResponseEntity<CommonResponse<FollowResponse>> unfollow(
+            @SessionAttribute(name = "longinUser") SessionUser loginUser,
+            @PathVariable Long followeeId ) {
+        Long followerId = loginUser.getUserId();
+        FollowResponse result = followService.unfollow(followerId, followeeId);
+
+        CommonResponse<FollowResponse> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - Get Following List
+    // - Get Follower List
 }

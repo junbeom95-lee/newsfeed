@@ -20,10 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.newsfeed.cider.common.enums.ExceptionCode.FORBIDDEN;
 import static com.newsfeed.cider.common.enums.ExceptionCode.NOT_FOUND_POST;
 import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
-import static com.newsfeed.cider.common.util.AuthManager.validateLogin;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +32,6 @@ public class PostService {
     // Post 생성
     @Transactional
     public PostCreateResponse savePost(@Valid PostCreateRequest request, Long loginId) {
-
-        validateLogin(loginId);
 
         Profile profile = getProfileById(loginId);
 
@@ -74,8 +70,6 @@ public class PostService {
     @Transactional
     public PostUpdateResponse updateService(@Valid PostUpdateRequest request, Long loginId, Long postId) {
 
-        validateLogin(loginId);
-
         Post post = getPostById(postId);
 
         validateAuthorization(loginId, postId);
@@ -96,7 +90,6 @@ public class PostService {
     // Post 삭제
     @Transactional
     public void deletePost(Long loginId, Long postId) {
-        validateLogin(loginId);
         Post post = postRepository.findByPostId(postId).orElseThrow(() -> new CustomException(NOT_FOUND_POST));
         validateAuthorization(loginId, postId);
         post.softDelete();

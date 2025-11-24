@@ -7,9 +7,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "follow")
+@Table( name = "follows",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_follow_follower_followee",
+                        columnNames = {"follower_id", "followee_id"}
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Follow extends BaseEntity {
+public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,15 +24,15 @@ public class Follow extends BaseEntity {
     private Long followId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "following_id", nullable = false)
-    private Profile following;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "follower_id", nullable = false)
     private Profile follower;
 
-    public Follow(Profile following, Profile follower) {
-        this.following = following;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "followee_id", nullable = false)
+    private Profile followee;
+
+    public Follow(Profile follower, Profile followee) {
         this.follower = follower;
+        this.followee = followee;
     }
 }

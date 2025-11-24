@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class SessionUser {
-
     private final Long userId;
     private final String email;
 

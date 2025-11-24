@@ -119,8 +119,13 @@ public class CommunityService {
 
         boolean existence = communityRepository.existsByCommunityName(communityName);
 
+        Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
+                () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY)
+        );
+
         if (existence) {
-            communityRepository.deleteByCommunityName(communityName);
+
+            community.softDelete();
 
             return new CommonResponse<>(HttpStatus.OK, null);
         }

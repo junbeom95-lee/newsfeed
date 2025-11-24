@@ -13,14 +13,12 @@ public class ProfileCreateResponse {
     private Long id;
     private String email;
     private String profilename;
-    private String password;
 
     public static ProfileCreateResponse from(Profile profile) {
         return new ProfileCreateResponse(
                 profile.getProfileId(),
                 profile.getName(),
-                profile.getEmail(),
-                profile.getPassword()
+                profile.getEmail()
         );
     }
 

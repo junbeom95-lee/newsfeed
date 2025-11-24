@@ -41,6 +41,18 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getAllPost(page, size)));
     }
 
+    // loginId가 작성한 Post 조회 (My Post 조회)
+    @GetMapping("/me")
+    public ResponseEntity<CommonResponse<Page<PostGetResponse>>> getPost(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpSession session
+    ) {
+        Long loginId = (Long) session.getAttribute("loginId");
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getAllPostById(loginId, page, size)));
+    }
+
+
     // 단건 Post 조회
     @GetMapping("/{postId}")
     public ResponseEntity<CommonResponse<PostGetResponse>> getPost(@PathVariable Long postId) {

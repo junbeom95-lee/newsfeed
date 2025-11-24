@@ -75,6 +75,14 @@ public class PostService {
         return PostGetResponse.from(post);
     }
 
+    // profileId가 작성한 Post 조회
+    @Transactional(readOnly = true)
+    public Page<PostGetResponse> getAllPostById(Long profileId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        Page<Post> posts = postRepository.findAllByProfileId(profileId, pageable);
+        return posts.map(PostGetResponse::from);
+    }
+
     // Post 수정
     @Transactional
     public PostUpdateResponse updateService(@Valid PostUpdateRequest request, Long loginId, Long postId) {

@@ -16,11 +16,19 @@ public enum ExceptionCode {
     NOT_FOUND_POST(HttpStatus.BAD_REQUEST, "찾으시는 게시글이없습니다"),
 
     //댓글
-    NOT_FOUND_COMMENT(HttpStatus.BAD_REQUEST, "댓글이 존재하지 않습니다");
+    NOT_FOUND_COMMENT(HttpStatus.BAD_REQUEST, "댓글이 존재하지 않습니다"),
 
     //팔로우
+    ALREADY_FOLLOW(HttpStatus.BAD_REQUEST, "이미 팔로우한 유저입니다."),
+    SELF_FOLLOW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신은 팔로우할 수 없습니다."),
+    NOT_FOUND_FOLLOW(HttpStatus.BAD_REQUEST, "팔로우 관계가 존재하지 않습니다"),
 
     //그룹
+
+    //인증
+    NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED,  "로그인이 되어 있지 않습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN,  "해당 작업을 수행할 권한이 없습니다."),
+    ALREADY_LOGGED_IN(HttpStatus.CONFLICT, "이미 로그인이 되어 있습니다.");
 
     private final HttpStatus status;
     private final String message;

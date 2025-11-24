@@ -1,5 +1,6 @@
 package com.newsfeed.cider.common.entity;
 
+import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,6 +36,16 @@ public class Profile extends BaseEntity {
         this.email = email;
         this.password = password;
     }
+
+    public void updateProfileInfo(String profilename, String email) {
+        this.name = profilename;
+        this.email = email;
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
 
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();

@@ -1,5 +1,6 @@
 package com.newsfeed.cider.domain.profile.model.response;
 
+
 import com.newsfeed.cider.domain.profile.model.dto.ProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,8 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfileUpdateResponse {
-    private Long id;
+public class ProfileReadResponse {
+    private long profileId;
     private String profilename;
     private String email;
     private String password;
@@ -19,8 +20,8 @@ public class ProfileUpdateResponse {
     private LocalDateTime modifiedAt;
     private LocalDateTime deletedAt;
 
-    public static ProfileUpdateResponse from(ProfileDto dto) {
-        return new ProfileUpdateResponse(
+    public static ProfileReadResponse from(ProfileDto dto) {
+        return new ProfileReadResponse(
                 dto.getProfileId(),
                 dto.getName(),
                 dto.getEmail(),
@@ -31,4 +32,5 @@ public class ProfileUpdateResponse {
 
         );
     }
+
 }

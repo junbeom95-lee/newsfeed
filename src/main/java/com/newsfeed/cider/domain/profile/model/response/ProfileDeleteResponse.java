@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfileUpdateResponse {
+public class ProfileDeleteResponse {
     private Long id;
     private String profilename;
     private String email;
@@ -19,8 +19,8 @@ public class ProfileUpdateResponse {
     private LocalDateTime modifiedAt;
     private LocalDateTime deletedAt;
 
-    public static ProfileUpdateResponse from(ProfileDto dto) {
-        return new ProfileUpdateResponse(
+    public static ProfileDeleteResponse from(ProfileDto dto){
+        return new ProfileDeleteResponse(
                 dto.getProfileId(),
                 dto.getName(),
                 dto.getEmail(),
@@ -28,7 +28,8 @@ public class ProfileUpdateResponse {
                 dto.getCreatedAt(),
                 dto.getModifiedAt(),
                 dto.getDeletedAt()
-
         );
+
+
     }
 }

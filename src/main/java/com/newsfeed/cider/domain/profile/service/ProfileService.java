@@ -2,11 +2,17 @@ package com.newsfeed.cider.domain.profile.service;
 
 
 import com.newsfeed.cider.common.entity.Profile;
+import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
-import com.newsfeed.cider.common.utils.PasswordEncoder;
+import com.newsfeed.cider.common.model.SessionUser;
+import com.newsfeed.cider.common.util.PasswordEncoder;
 import com.newsfeed.cider.domain.profile.model.dto.ProfileDto;
+import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
+import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
+import com.newsfeed.cider.domain.profile.model.response.ProfileDeleteResponse;
+import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileUpdateResponse;
 import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
 import lombok.AccessLevel;
@@ -25,7 +31,7 @@ public class ProfileService {
 
     public ProfileCreateResponse createProfile(ProfileCreateRequest request){
         if (profileRepository.existsByEmail(request.getEmail())){
-            throw new CustomException("EXIST_EMAIL");
+            throw new CustomException(ExceptionCode.EXIST_EMAIL);
         }
 
         Profile profile = new Profile(request.getProfilename(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
@@ -37,5 +43,52 @@ public class ProfileService {
     }
 
 
-    public ProfileUpdateResponse updateProfile(long)
+    public ProfileUpdateResponse updateProfile(long nowLoginProfileId, long profileId, ProfileUpdateRequest request){
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+        isOwner(nowLoginProfileId, profile.getProfileId());
+
+        profile.update(request);
+        profileRepository.save(profile);
+        ProfileDto dto = ProfileDto.from(profile);
+
+        return ProfileUpdateResponse.from(dto);
+    }
+
+
+    public ProfileDeleteResponse deleteProfile(long nowLoginId, long profileId){
+
+        Profile profile =  profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+        isOwner(nowLoginId, profile.getProfileId());
+        profileRepository.delete(profile);
+        ProfileDto dto = ProfileDto.from(profile);
+
+        return ProfileDeleteResponse.from(dto);
+    }
+
+
+    @Transactional(readOnly = true)
+    public ProfileReadResponse getProfile(long profileId){
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
+        ProfileDto dto = ProfileDto.from(profile);
+
+        return ProfileReadResponse.from(dto);
+    }
+
+    @Transactional(readOnly = true)
+    public SessionUser login(LoginRequest request){
+        Profile profile = profileRepository.findByEmail(request.getEmail()).orElseThrow(() -> new CustomException(ExceptionCode.UN_AUTHORIZED));
+
+        if(!passwordEncoder.matches(request.getPassword(), profile.getPassword())){
+            throw new CustomException(ExceptionCode.UN_AUTHORIZED);
+        }
+
+        return new SessionUser(profile.getProfileId(), profile.getEmail());
+    }
+
+    void isOwner(long nowLoginProfileId, long profileId){
+        if(nowLoginProfileId != profileId){
+            throw new CustomException(ExceptionCode.FORBIDDEN);
+        }
+    }
 }

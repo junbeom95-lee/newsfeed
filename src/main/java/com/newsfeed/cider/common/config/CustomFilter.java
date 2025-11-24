@@ -18,7 +18,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Slf4j
-//@Component        //프로필에 대해 session을 활용하면 컴포넌트를 주석 해제 해주세요
+@Component
 @RequiredArgsConstructor
 public class CustomFilter extends OncePerRequestFilter {
 

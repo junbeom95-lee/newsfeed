@@ -23,7 +23,9 @@ public enum ExceptionCode {
     SELF_FOLLOW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신은 팔로우할 수 없습니다."),
     NOT_FOUND_FOLLOW(HttpStatus.BAD_REQUEST, "팔로우 관계가 존재하지 않습니다"),
 
-    //그룹
+    //커뮤니티 그룹
+    EXIST_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하는 커뮤니티입니다"),
+    NOT_FOUND_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하지 않은 커뮤니티입니다");
 
     //인증
     NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED,  "로그인이 되어 있지 않습니다."),

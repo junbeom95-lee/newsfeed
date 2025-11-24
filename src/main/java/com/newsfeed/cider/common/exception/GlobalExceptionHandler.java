@@ -1,5 +1,6 @@
 package com.newsfeed.cider.common.exception;
 
+import com.newsfeed.cider.common.enums.ValidCode;
 import com.newsfeed.cider.common.model.CommonResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +56,12 @@ public class GlobalExceptionHandler {
         HashMap<String, String> map = new HashMap<>();
 
         //2. 에러들 각각 map에 (key : 필드, value : message) 담기
-        allErrors.forEach(error ->
-            map.put(((FieldError)error).getField(), error.getDefaultMessage())
+        allErrors.forEach(error -> {
+            String field = ((FieldError) error).getField();
+            String message = ValidCode.getMessage(field, ((FieldError) error).getCode());
+
+            map.put(field, message);
+                }
         );
 
         return map;

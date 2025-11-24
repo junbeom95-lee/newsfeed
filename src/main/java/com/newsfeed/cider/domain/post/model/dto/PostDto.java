@@ -1,6 +1,5 @@
 package com.newsfeed.cider.domain.post.model.dto;
 
-import com.newsfeed.cider.common.entity.Comment;
 import com.newsfeed.cider.common.entity.Community;
 import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,7 +18,6 @@ public class PostDto {
     private Profile profile;
     private String title;
     private String content;
-    private List<Comment> commentList;
     private Community community;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -32,7 +29,6 @@ public class PostDto {
                 post.getProfile(),
                 post.getTitle(),
                 post.getContent(),
-                post.getCommentList(),
                 post.getCommunity(),
                 post.getCreatedAt(),
                 post.getModifiedAt(),

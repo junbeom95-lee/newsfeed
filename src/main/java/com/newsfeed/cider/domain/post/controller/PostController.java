@@ -20,6 +20,7 @@ public class PostController {
 
     private final PostService postService;
 
+    // Post 생성
     @PostMapping
     public ResponseEntity<CommonResponse<PostCreateResponse>> createPost(
             @Valid @RequestBody PostCreateRequest request, HttpSession session
@@ -29,6 +30,7 @@ public class PostController {
                 .body(new CommonResponse<>(HttpStatus.CREATED, postService.savePost(request, loginId)));
     }
 
+    // Post 수정
     @PutMapping("/{postId}")
     public ResponseEntity<CommonResponse<PostUpdateResponse>> updatePost(
             @PathVariable Long postId, @Valid @RequestBody PostUpdateRequest request, HttpSession session
@@ -38,6 +40,7 @@ public class PostController {
                 .body(new CommonResponse<>(HttpStatus.OK, postService.updateService(request, loginId, postId)));
     }
 
+    // Post 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<CommonResponse> deletePost(@PathVariable Long postId, HttpSession session) {
         Long loginId = (Long) session.getAttribute("loginId");

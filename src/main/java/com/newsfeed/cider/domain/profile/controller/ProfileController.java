@@ -1,7 +1,6 @@
 package com.newsfeed.cider.domain.profile.controller;
 
 
-import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
@@ -10,7 +9,6 @@ import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
-import com.newsfeed.cider.domain.profile.model.response.ProfileDeleteResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileUpdateResponse;
 import com.newsfeed.cider.domain.profile.service.ProfileService;
@@ -80,12 +78,16 @@ public class ProfileController {
 
     //회원탈퇴
     @DeleteMapping("/profile/{profileId}")
-    public ResponseEntity<CommonResponse<ProfileDeleteResponse>> deleteProfile(
-            @PathVariable Long profileId, @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+    public ResponseEntity<CommonResponse<Void>> deleteProfile(
+            @PathVariable Long profileId, @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            HttpSession session){
         checkLogin(sessionUser);
 
+        profileService.deleteProfile(sessionUser.getUserId(), profileId);
+        session.invalidate();
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new CommonResponse<>(HttpStatus.OK, profileService.deleteProfile(sessionUser.getUserId(), profileId)));
+                .body(new CommonResponse<>(HttpStatus.OK, null));
     }
 
     private void checkLogin(SessionUser sessionUser) {

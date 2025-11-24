@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
+
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional
 @Service
@@ -47,7 +49,8 @@ public class ProfileService {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
-        isOwner(nowLoginProfileId, profile.getProfileId());
+        //isOwner(nowLoginProfileId, profile.getProfileId());
+        validateAuthorization(nowLoginProfileId, profile.getProfileId());
 
         profile.updateProfileInfo(request.getProfilename(), request.getEmail());
 
@@ -64,10 +67,13 @@ public class ProfileService {
 
 
 
-    public ProfileDeleteResponse deleteProfile(long nowLoginId, long profileId){
+    public ProfileDeleteResponse deleteProfile(long nowLoginProfileId, long profileId){
 
         Profile profile =  profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
-        isOwner(nowLoginId, profile.getProfileId());
+        //isOwner(nowLoginId, profile.getProfileId());
+
+        validateAuthorization(nowLoginProfileId, profile.getProfileId());
+
         profileRepository.delete(profile);
         ProfileDto dto = ProfileDto.from(profile);
 
@@ -95,9 +101,9 @@ public class ProfileService {
         return new SessionUser(profile.getProfileId(), profile.getEmail());
     }
 
-    void isOwner(long nowLoginProfileId, long profileId){
+    /*void isOwner(long nowLoginProfileId, long profileId){
         if(nowLoginProfileId != profileId){
             throw new CustomException(ExceptionCode.FORBIDDEN);
         }
-    }
+    }*/
 }

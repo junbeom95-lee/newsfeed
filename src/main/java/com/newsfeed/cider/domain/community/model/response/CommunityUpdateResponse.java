@@ -1,6 +1,6 @@
 package com.newsfeed.cider.domain.community.model.response;
 
-import com.newsfeed.cider.domain.community.model.dto.CommunityDto;
+import com.newsfeed.cider.common.entity.Community;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +16,12 @@ public class CommunityUpdateResponse {
     private String info;
     private LocalDateTime createdAt;
 
-    public static CommunityUpdateResponse from(CommunityDto dto) {
+    public static CommunityUpdateResponse from(Community community) {
         return new CommunityUpdateResponse(
-                dto.getCommunityId(),
-                dto.getCommunityName(),
-                dto.getInfo(),
-                dto.getCreatedAt()
+                community.getCommunityId(),
+                community.getCommunityName(),
+                community.getInfo(),
+                community.getCreatedAt()
         );
     }
 }

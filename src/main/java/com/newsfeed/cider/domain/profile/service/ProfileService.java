@@ -6,12 +6,10 @@ import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.common.util.PasswordEncoder;
-import com.newsfeed.cider.domain.profile.model.dto.ProfileDto;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
-import com.newsfeed.cider.domain.profile.model.response.ProfileDeleteResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileUpdateResponse;
 import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
@@ -38,9 +36,8 @@ public class ProfileService {
 
         Profile profile = new Profile(request.getProfilename(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         profileRepository.save(profile);
-        ProfileDto dto = ProfileDto.from(profile);
 
-        return ProfileCreateResponse.from(dto);
+        return ProfileCreateResponse.from(profile);
 
     }
 
@@ -61,23 +58,18 @@ public class ProfileService {
 
         profileRepository.save(profile);
 
-        ProfileDto dto = ProfileDto.from(profile);
-        return ProfileUpdateResponse.from(dto);
+        return ProfileUpdateResponse.from(profile);
     }
 
 
 
-    public ProfileDeleteResponse deleteProfile(long nowLoginProfileId, long profileId){
+    public void deleteProfile(long nowLoginProfileId, long profileId){
 
         Profile profile =  profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
-        //isOwner(nowLoginId, profile.getProfileId());
 
         validateAuthorization(nowLoginProfileId, profile.getProfileId());
 
         profileRepository.delete(profile);
-        ProfileDto dto = ProfileDto.from(profile);
-
-        return ProfileDeleteResponse.from(dto);
     }
 
 
@@ -85,9 +77,7 @@ public class ProfileService {
     public ProfileReadResponse getProfile(long profileId){
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
-        ProfileDto dto = ProfileDto.from(profile);
-
-        return ProfileReadResponse.from(dto);
+        return ProfileReadResponse.from(profile);
     }
 
     @Transactional(readOnly = true)

@@ -32,7 +32,6 @@ public class FollowController {
                 new CommonResponse<>(HttpStatus.CREATED, result);
 
         return ResponseEntity.status(response.getStatus()).body(response);
-
     }
     // - UnFollow
     @DeleteMapping("/{followeeId}/follow")

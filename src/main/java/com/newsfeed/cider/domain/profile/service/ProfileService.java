@@ -95,7 +95,8 @@ public class ProfileService {
 
         validateAuthorization(nowLoginProfileId, profile.getProfileId());
 
-        profileRepository.delete(profile);
+        profile.softDelete();
+        profileRepository.save(profile);
     }
 
 

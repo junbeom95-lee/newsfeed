@@ -3,9 +3,9 @@ package com.newsfeed.cider.domain.post.service;
 import com.newsfeed.cider.common.entity.Community;
 import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
-import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
+import com.newsfeed.cider.domain.post.model.condition.PostSearchCond;
 import com.newsfeed.cider.domain.post.model.request.PostCreateRequest;
 import com.newsfeed.cider.domain.post.model.request.PostUpdateRequest;
 import com.newsfeed.cider.domain.post.model.response.PostCreateResponse;
@@ -62,8 +62,8 @@ public class PostService {
 
     // 전체 Post 조회 (페이징)
     @Transactional(readOnly = true)
-    public Page<PostGetResponse> getAllPost(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+    public Page<PostGetResponse> getAllPost(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<Post> posts = postRepository.findAll(pageable);
         return posts.map(PostGetResponse::from);
     }
@@ -77,9 +77,18 @@ public class PostService {
 
     // profileId가 작성한 Post 조회
     @Transactional(readOnly = true)
-    public Page<PostGetResponse> getAllPostById(Long profileId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+    public Page<PostGetResponse> getAllPostById(Long profileId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<Post> posts = postRepository.findAllByProfileId(profileId, pageable);
+        return posts.map(PostGetResponse::from);
+    }
+
+    // condition 조건에 부합되는 Post들 조회
+    public Page<PostGetResponse> getSearchedPost(PostSearchCond condition, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+
+        Page<Post> posts = postRepository.search(condition, pageable);
+
         return posts.map(PostGetResponse::from);
     }
 

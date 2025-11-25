@@ -27,7 +27,7 @@ public class CommentService {
     private final ProfileRepository profileRepository;
 
     @Transactional
-    public CommentResponseDto createComment(SessionUser sessionUser, Long postId, Long commentId, CommentRequestDto dto) {
+    public CommentResponseDto createComment(SessionUser sessionUser, Long postId, Long parentId, CommentRequestDto dto) {
 
         //1.요청을 entity객체로 만든다.
         //데이터타입  데이터명  =  new 데이터 타입
@@ -37,7 +37,7 @@ public class CommentService {
         //profile parentId content
         Profile profile = profileRepository.findById(sessionUser.getUserId()).orElseThrow(()
                 ->new IllegalArgumentException("아이디가 존재하지 않습니다."));
-        Comment comment = new Comment(post, profile , commentId, dto.getContent());
+        Comment comment = new Comment(post, profile , parentId, dto.getContent());
 
         //2.저장한다.
         Comment savedComment =commentRepository.save(comment);
@@ -48,7 +48,9 @@ public class CommentService {
     }
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getComments(Long postId) {
-        return commentRepository.findByPostIdAndParentIsNullOrderByCreatedAtAsc(postId)
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
+        return commentRepository.findByPost(post)
                 .stream()
                 .map(CommentResponseDto::from)
                 .collect(Collectors.toList());

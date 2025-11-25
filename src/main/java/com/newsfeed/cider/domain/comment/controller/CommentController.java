@@ -16,14 +16,14 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/posts/{postId}/comments/{commentId}")
+    @PostMapping("/posts/{postId}/comments/{parentId}")
     public CommentResponseDto createComment(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long postId,
-            @PathVariable Long commentId,
+            @PathVariable(required = false) Long parentId,
             @RequestBody CommentRequestDto dto
           ) {
-        return commentService.createComment(sessionUser, postId, commentId, dto);
+        return commentService.createComment(sessionUser, postId, parentId, dto);
     }
 
     @GetMapping("/posts/{postId}/comments")

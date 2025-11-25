@@ -14,6 +14,7 @@ public class CommunityCreateResponse {
     private Long communityId;
     private String communityName;
     private String info;
+    private Long profileId;
     private LocalDateTime createdAt;
 
     public static CommunityCreateResponse from(Community community) {
@@ -21,6 +22,7 @@ public class CommunityCreateResponse {
                 community.getCommunityId(),
                 community.getCommunityName(),
                 community.getInfo(),
+                community.getProfile().getProfileId(),
                 community.getCreatedAt()
         );
     }

@@ -3,14 +3,16 @@ package com.newsfeed.cider.domain.post.service;
 import com.newsfeed.cider.common.entity.Community;
 import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
-import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
+import com.newsfeed.cider.domain.community.repository.CommunityRepository;
+import com.newsfeed.cider.domain.post.model.condition.PostSearchCond;
 import com.newsfeed.cider.domain.post.model.request.PostCreateRequest;
 import com.newsfeed.cider.domain.post.model.request.PostUpdateRequest;
 import com.newsfeed.cider.domain.post.model.response.PostCreateResponse;
 import com.newsfeed.cider.domain.post.model.response.PostGetResponse;
 import com.newsfeed.cider.domain.post.model.response.PostUpdateResponse;
 import com.newsfeed.cider.domain.post.repository.PostRepository;
+import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,7 +22,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static com.newsfeed.cider.common.enums.ExceptionCode.NOT_FOUND_POST;
+import static com.newsfeed.cider.common.enums.ExceptionCode.NOT_FOUND_PROFILE;
 import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
 
 @Service
@@ -28,23 +33,27 @@ import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommunityRepository communityRepository;
+    private final ProfileRepository profileRepository;
 
     // Post 생성
     @Transactional
     public PostCreateResponse savePost(@Valid PostCreateRequest request, Long loginId) {
 
-        Profile profile = getProfileById(loginId);
+        Profile profile = profileRepository.findById(loginId).orElseThrow(
+                () -> new CustomException(NOT_FOUND_PROFILE)
+        );
 
-        Community community = null;
-        if (request.getCommunityId() != null) {
-            community = getCommunityById(request.getCommunityId());
+        Optional<Community> community = Optional.empty();
+        if (request.getCommunityName() != null) {
+            community = communityRepository.findByCommunityName(request.getCommunityName());
         }
 
         Post post = new Post(
                 profile,
                 request.getTitle(),
                 request.getContent(),
-                community
+                community.orElse(null)
         );
 
         Post savedPost = postRepository.save(post);
@@ -53,8 +62,8 @@ public class PostService {
 
     // 전체 Post 조회 (페이징)
     @Transactional(readOnly = true)
-    public Page<PostGetResponse> getAllPost(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+    public Page<PostGetResponse> getAllPost(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<Post> posts = postRepository.findAll(pageable);
         return posts.map(PostGetResponse::from);
     }
@@ -64,6 +73,23 @@ public class PostService {
     public PostGetResponse getOnePost(Long postId) {
         Post post = getPostById(postId);
         return PostGetResponse.from(post);
+    }
+
+    // profileId가 작성한 Post 조회
+    @Transactional(readOnly = true)
+    public Page<PostGetResponse> getAllPostById(Long profileId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        Page<Post> posts = postRepository.findAllByProfile_ProfileId(profileId, pageable);
+        return posts.map(PostGetResponse::from);
+    }
+
+    // condition 조건에 부합되는 Post들 조회
+    public Page<PostGetResponse> getSearchedPost(PostSearchCond condition, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+
+        Page<Post> posts = postRepository.search(condition, pageable);
+
+        return posts.map(PostGetResponse::from);
     }
 
     // Post 수정
@@ -102,15 +128,5 @@ public class PostService {
                 () -> new CustomException(NOT_FOUND_POST)
         );
         return post;
-    }
-
-    // 아직 구현되지 않은 메서드 , CommunityService에 구현 예정, 컴파일 에러 방지를 위해 선언만 해둠
-    private Community getCommunityById(Long communityId) {
-        return null;
-    }
-
-    // 아직 구현되지 않은 메서드 , ProfileService에 구현 예정, 컴파일 에러 방지를 위해 선언만 해둠
-    private Profile getProfileById(Long loginUserId) {
-        throw new CustomException(ExceptionCode.FORBIDDEN);
     }
 }

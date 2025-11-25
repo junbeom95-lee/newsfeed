@@ -16,8 +16,7 @@ public class ProfileUpdateResponse {
     private String profilename;
     private String email;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
+    private Boolean isPrviate;
 
     public static ProfileUpdateResponse from(Profile profile) {
         return new ProfileUpdateResponse(
@@ -25,9 +24,7 @@ public class ProfileUpdateResponse {
                 profile.getName(),
                 profile.getEmail(),
                 profile.getCreatedAt(),
-                profile.getModifiedAt(),
-                profile.getDeletedAt()
-
+                profile.getIsPrivate()
         );
     }
 }

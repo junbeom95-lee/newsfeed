@@ -27,8 +27,12 @@ public class ProfileController {
 
     //프로필 정보 보기
     @GetMapping("/profile/{profileId}")
-    public ResponseEntity<CommonResponse<ProfileReadResponse>> getProfile(@PathVariable Long profileId){
-        ProfileReadResponse response = profileService.getProfile(profileId);
+    public ResponseEntity<CommonResponse<ProfileReadResponse>> getProfile(@PathVariable Long profileId,
+                                                                          @SessionAttribute(name = "loginUser", required = false ) SessionUser sessionUser) {
+        Long nowLoginProfileId = (sessionUser != null) ? sessionUser.getUserId() : null;
+
+        ProfileReadResponse response = profileService.getProfile(profileId, nowLoginProfileId);
+
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
     }
 
@@ -40,6 +44,24 @@ public class ProfileController {
         checkLogin(sessionUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfile(sessionUser.getUserId(), profileId, request)));
+    }
+
+    //계정 공개 설정
+    @PutMapping("/profile/{profileId}/public")
+    public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePublic(@PathVariable Long profileId,
+                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+        checkLogin(sessionUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePublic(sessionUser.getUserId(), profileId)));
+    }
+
+    //계정 비공개 설정
+    @PutMapping("/profile/{profileId}/private")
+    public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePrivate(@PathVariable Long profileId,
+                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+        checkLogin(sessionUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePrivate(sessionUser.getUserId(), profileId)));
     }
 
 

@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.newsfeed.cider.domain.follow.repository.FollowRepository;
 
 import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
 
@@ -26,6 +27,7 @@ import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -42,7 +44,7 @@ public class ProfileService {
     }
 
 
-    public ProfileUpdateResponse updateProfile(long nowLoginProfileId, long profileId, ProfileUpdateRequest request) {
+    public ProfileUpdateResponse updateProfile(Long nowLoginProfileId, Long profileId, ProfileUpdateRequest request) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
@@ -61,23 +63,70 @@ public class ProfileService {
         return ProfileUpdateResponse.from(profile);
     }
 
+    public ProfileUpdateResponse updateProfilePrivate(Long nowLoginProfileId, Long profileId) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
+        validateAuthorization(nowLoginProfileId, profile.getProfileId());
+
+        profile.setPrivate(Boolean.TRUE);
+
+        profileRepository.save(profile);
+        return ProfileUpdateResponse.from(profile);
+    }
+
+    public ProfileUpdateResponse updateProfilePublic(Long nowLoginProfileId, Long profileId) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
+        validateAuthorization(nowLoginProfileId, profile.getProfileId());
+
+        profile.setPrivate(Boolean.FALSE);
+
+        profileRepository.save(profile);
+        return ProfileUpdateResponse.from(profile);
+    }
 
 
-    public void deleteProfile(long nowLoginProfileId, long profileId){
+
+    public void deleteProfile(Long nowLoginProfileId, Long profileId){
 
         Profile profile =  profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
         validateAuthorization(nowLoginProfileId, profile.getProfileId());
 
-        profileRepository.delete(profile);
+        profile.softDelete();
+        profileRepository.save(profile);
     }
 
 
     @Transactional(readOnly = true)
-    public ProfileReadResponse getProfile(long profileId){
+    public ProfileReadResponse getProfile(Long profileId, Long nowLoginProfileId){
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
+        //공개 계정
+        if(!profile.getIsPrivate()){
+            return ProfileReadResponse.from(profile);
+        }
+
+        //내 계정 조회
+        if (nowLoginProfileId != null && nowLoginProfileId.equals(profileId)){
+            return ProfileReadResponse.from(profile);
+        }
+
+        //로그인 x 비공개 계정 조회
+        if(nowLoginProfileId == null){
+            throw new CustomException(ExceptionCode.FORBIDDEN);
+        }
+
+        //팔로우 여부 확인
+        boolean isFollower = isFollow(nowLoginProfileId, profileId);
+
+        if(!isFollower){
+            throw new CustomException(ExceptionCode.FORBIDDEN);
+        }
         return ProfileReadResponse.from(profile);
+
     }
 
     @Transactional(readOnly = true)
@@ -89,6 +138,18 @@ public class ProfileService {
         }
 
         return new SessionUser(profile.getProfileId(), profile.getEmail());
+    }
+
+    @Transactional(readOnly = true)
+    boolean isFollow(Long nowLoginProfileId, Long followeeId){
+
+        Profile follower = profileRepository.findById(nowLoginProfileId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
+        Profile followee = profileRepository.findById(followeeId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
+        return followRepository.existsByFollowerAndFollowee(follower, followee);
     }
 
     /*void isOwner(long nowLoginProfileId, long profileId){

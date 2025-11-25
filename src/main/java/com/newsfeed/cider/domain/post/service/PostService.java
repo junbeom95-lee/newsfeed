@@ -79,7 +79,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<PostGetResponse> getAllPostById(Long profileId, int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-        Page<Post> posts = postRepository.findAllByProfileId(profileId, pageable);
+        Page<Post> posts = postRepository.findAllByProfile_ProfileId(profileId, pageable);
         return posts.map(PostGetResponse::from);
     }
 

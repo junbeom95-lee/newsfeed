@@ -12,5 +12,5 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     // PostId가 일치하는 단일 Post 찾기
     Optional<Post> findByPostId(Long postId);
 
-    Page<Post> findAllByProfileId(Long postId, Pageable pageable);
+    Page<Post> findAllByProfile_ProfileId(Long profileId, Pageable pageable);
 }

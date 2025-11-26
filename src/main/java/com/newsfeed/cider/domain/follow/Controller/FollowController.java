@@ -133,7 +133,7 @@ public class FollowController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     // - FollowRequest Accept
-    @PostMapping("/me/{followId}/accept")
+    @PutMapping("/followrequest/{followId}/accept")
     public ResponseEntity<CommonResponse<FollowResponse>> acceptFollow(
             @SessionAttribute(name = "loginUser") SessionUser loginUser,
             @PathVariable Long followId) {
@@ -146,7 +146,7 @@ public class FollowController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     // - FollowRequest Reject
-    @PostMapping("/me/{followId}/reject")
+    @PutMapping("/followrequest/{followId}/reject")
     public ResponseEntity<CommonResponse<FollowResponse>> rejectFollow(
             @SessionAttribute(name = "loginUser") SessionUser loginUser,
             @PathVariable Long followId) {

@@ -31,7 +31,7 @@ https://www.instagram.com/
 ---
 ## ERD 구조
 
-<img width="1718" height="1010" alt="image" src="https://github.com/user-attachments/assets/ec44155e-be85-4b74-8690-d6020c026b5f" />
+<img width="1842" height="1149" alt="image" src="https://github.com/user-attachments/assets/ddcef47c-2fcd-4d77-b78b-9a29d9136f5e" />
 
 ---
 ## 주요 기능

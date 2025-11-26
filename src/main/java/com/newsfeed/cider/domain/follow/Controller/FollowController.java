@@ -43,7 +43,7 @@ public class FollowController {
         FollowResponse result = followService.unfollow(loginUserId, followeeId);
 
         CommonResponse<FollowResponse> response =
-                new CommonResponse<>(HttpStatus.OK, result);
+                new CommonResponse<>(HttpStatus.NO_CONTENT, result);
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }

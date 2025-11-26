@@ -6,7 +6,6 @@ import com.newsfeed.cider.common.entity.Profile_Community;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
-import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
 import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
 import com.newsfeed.cider.domain.profile_community.model.response.CommunityMemberResponse;
 import com.newsfeed.cider.domain.profile_community.model.response.UserCommunityResponse;
@@ -26,7 +25,6 @@ public class ProfileCommunityService {
     private final ProfileRepository profileRepository;
     private final CommunityRepository communityRepository;
 
-
     //커뮤니티 가입(조인 생성)
     public void createJoin(Long profileId, Long communityId) {
 
@@ -42,9 +40,9 @@ public class ProfileCommunityService {
             throw new CustomException(ExceptionCode.ALREADY_JOINED);
         }
 
-        Profile_Community profilecommmunity = new Profile_Community(profile, community);
+        Profile_Community profileCommunity = new Profile_Community(profile, community);
 
-        profileCommunityRepository.save(profilecommmunity);
+        profileCommunityRepository.save(profileCommunity);
     }
 
     //커뮤니티 탈퇴(가입 취소)

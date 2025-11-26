@@ -24,8 +24,6 @@ public class ProfileCommunityController {
     @PostMapping("/community/{communityId}/join")
     public ResponseEntity<CommonResponse<Void>> joinCommunity(@PathVariable Long communityId,
                                                               @SessionAttribute(name = "loginUser", required = false)SessionUser sessionUser){
-        checkLogin(sessionUser);
-
         profileCommunityService.createJoin(sessionUser.getUserId(), communityId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponse<>(HttpStatus.CREATED, null));
@@ -35,8 +33,6 @@ public class ProfileCommunityController {
     @DeleteMapping("/community/{communityId}/withdrawal")
     public ResponseEntity<CommonResponse<Void>> withdrawal(@PathVariable Long communityId,
                                                            @SessionAttribute(name = "loginUser", required = false)SessionUser sessionUser){
-        checkLogin(sessionUser);
-
         profileCommunityService.deleteJoin(sessionUser.getUserId(), communityId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, null));
@@ -51,30 +47,11 @@ public class ProfileCommunityController {
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
     }
 
-    //내가 가입한 커뮤니티 리스트
-    @GetMapping("/community/my")
-    public ResponseEntity<CommonResponse<List<UserCommunityResponse>>> getMyCommunities(
-            @SessionAttribute(name = "loginUser", required = false)SessionUser sessionUser){
-
-        checkLogin(sessionUser);
-
-        List<UserCommunityResponse> response = profileCommunityService.getCommunitysByProfile(sessionUser.getUserId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
-    }
-
     //특정 사용자가 가입한 커뮤니티 리스트
     @GetMapping("/profile/{profileId}/communities")
     public ResponseEntity<CommonResponse<List<UserCommunityResponse>>> getUserCommunities(@PathVariable Long profileId){
         List<UserCommunityResponse> response = profileCommunityService.getCommunitysByProfile(profileId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
-    }
-
-
-    private void checkLogin(SessionUser sessionUser){
-        if(sessionUser == null){
-            throw new CustomException(ExceptionCode.NOT_LOGGED_IN);
-        }
     }
 }

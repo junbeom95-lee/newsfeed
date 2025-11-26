@@ -33,6 +33,9 @@ public class Comment extends BaseEntity{
     @Column(nullable = false)
     private String content;             //댓글 내용
 
+    @Column
+    private Long likeCount = 0L;
+
     public void updateContent(String content) {
         this.content = content;
     }
@@ -44,4 +47,13 @@ public class Comment extends BaseEntity{
         this.content = content;
     }
 
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
 }

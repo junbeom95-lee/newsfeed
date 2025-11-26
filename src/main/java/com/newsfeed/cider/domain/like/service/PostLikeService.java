@@ -36,22 +36,22 @@ public class PostLikeService {
                 post
         );
         postLikeRepository.save(postLike);
-        long likesCount = postLikeRepository.countByPost_PostId(postId);
-        return new PostLikeResponse(postId, true, likesCount);
+        post.increaseLikeCount();
+        return new PostLikeResponse(postId, true, post.getLikeCount());
     }
 
     // 게시글에 like 취소
     @Transactional
     public PostLikeResponse unlikePost(Long loginId, Long postId) {
-        getPostById(postId); // Post가 존재하는지 검증용
+        Post post = getPostById(postId);
         boolean isLike = postLikeRepository.existsByProfile_ProfileIdAndPost_PostId(loginId, postId);
         if (!isLike) {
             throw new CustomException(NOT_LIKED);
         }
         PostLike postLike = postLikeRepository.findByProfile_ProfileIdAndPost_PostId(loginId, postId);
         postLikeRepository.delete(postLike);
-        long likesCount = postLikeRepository.countByPost_PostId(postId);
-        return new PostLikeResponse(postId, false, likesCount);
+        post.decreaseLikeCount();
+        return new PostLikeResponse(postId, false, post.getLikeCount());
     }
 
     // postId가 일치하는 Post 가져오기

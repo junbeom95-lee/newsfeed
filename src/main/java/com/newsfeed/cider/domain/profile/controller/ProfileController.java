@@ -124,7 +124,7 @@ public class ProfileController {
 
     private void checkLogin(SessionUser sessionUser) {
         if (sessionUser == null) {
-            throw new CustomException(ExceptionCode.FORBIDDEN);
+            throw new CustomException(ExceptionCode.NOT_LOGGED_IN);
         }
     }
 

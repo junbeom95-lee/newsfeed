@@ -5,14 +5,12 @@ import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.enums.FollowStatus;
 import com.newsfeed.cider.common.exception.CustomException;
-import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.follow.model.response.FollowRequestResponse;
 import com.newsfeed.cider.domain.follow.model.response.FollowResponse;
 import com.newsfeed.cider.domain.follow.repository.FollowRepository;
 import com.newsfeed.cider.domain.profile.model.response.SummaryProfileResponse;
 import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +64,15 @@ public class FollowService {
         followRepository.delete(follow);
         // - Return
         return FollowResponse.from(follow);
+    }
+    // - GetAll Follows
+    @Transactional(readOnly = true)
+    public List<FollowResponse> getAll() {
+        List<Follow> follows = followRepository.findAll();
+
+        return follows.stream()
+                .map(FollowResponse::from)
+                .toList();
     }
     // - Get MyFollowingList(Read)
     @Transactional(readOnly = true)

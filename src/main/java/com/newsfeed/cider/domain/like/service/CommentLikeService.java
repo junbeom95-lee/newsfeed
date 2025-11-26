@@ -2,6 +2,7 @@ package com.newsfeed.cider.domain.like.service;
 
 import com.newsfeed.cider.common.entity.*;
 import com.newsfeed.cider.common.exception.CustomException;
+import com.newsfeed.cider.domain.comment.repository.CommentRepository;
 import com.newsfeed.cider.domain.like.model.response.CommentLikeResponse;
 import com.newsfeed.cider.domain.like.repository.CommentLikeRepository;
 import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
@@ -22,10 +23,10 @@ public class CommentLikeService {
 
     // 댓글에 like
     @Transactional
-    public CommentLikeResponse likePost(Long loginId, Long commentId) {
+    public CommentLikeResponse likeComment(Long loginId, Long commentId) {
         Comment comment = getCommentById(commentId);
         Profile profile = getProfile(loginId);
-        boolean isLike = commentLikeRepository.existsByProfile_ProfileIdAndComment_CommentId(loginId, postId);
+        boolean isLike = commentLikeRepository.existsByProfile_ProfileIdAndComment_CommentId(loginId, commentId);
         if (isLike) {
             throw new CustomException(ALREADY_LIKED);
         }
@@ -40,7 +41,7 @@ public class CommentLikeService {
 
     // 댓글에 like 취소
     @Transactional
-    public CommentLikeResponse unlikePost(Long loginId, Long commentId) {
+    public CommentLikeResponse unlikeComment(Long loginId, Long commentId) {
         getCommentById(commentId); // Comment가 존재하는지 검증용
         boolean isLike = commentLikeRepository.existsByProfile_ProfileIdAndComment_CommentId(loginId, commentId);
         if (!isLike) {
@@ -52,8 +53,8 @@ public class CommentLikeService {
         return new CommentLikeResponse(commentId, false, likesCount);
     }
 
-    // postId가 일치하는 Post 가져오기
-    // postID가 일치하는 Post가 없으면 예외 처리
+    // commentId가 일치하는 comment 가져오기
+    // commentId가 일치하는 comment가 없으면 예외 처리
     private Comment getCommentById(Long postId) {
         Comment comment = commentRepository.findById(postId).orElseThrow(
                 () -> new CustomException(NOT_FOUND_COMMENT)

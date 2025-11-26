@@ -1,7 +1,7 @@
 package com.newsfeed.cider.domain.like.comtroller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.domain.like.model.response.PostLikeResponse;
+import com.newsfeed.cider.domain.like.model.response.CommentLikeResponse;
 import com.newsfeed.cider.domain.like.service.CommentLikeService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class CommentLikeController {
     private final CommentLikeService commentLikeService;
 
     @PostMapping("/{commentId}/unlikes")
-    public ResponseEntity<CommonResponse<PostLikeResponse>> likePost(
+    public ResponseEntity<CommonResponse<CommentLikeResponse>> likePost(
             @PathVariable Long commentId,
             HttpSession session
     ) {
@@ -29,7 +29,7 @@ public class CommentLikeController {
     }
 
     @DeleteMapping("/{commentId}/likes")
-    public ResponseEntity<CommonResponse<PostLikeResponse>> unlikePost(
+    public ResponseEntity<CommonResponse<CommentLikeResponse>> unlikePost(
             @PathVariable Long commentId,
             HttpSession session
     ) {

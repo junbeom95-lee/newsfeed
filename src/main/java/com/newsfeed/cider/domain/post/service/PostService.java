@@ -41,9 +41,7 @@ public class PostService {
     @Transactional
     public PostCreateResponse savePost(@Valid PostCreateRequest request, Long loginId) {
 
-        Profile profile = profileRepository.findById(loginId).orElseThrow(
-                () -> new CustomException(NOT_FOUND_PROFILE)
-        );
+        Profile profile = getProfile(loginId);
 
         Optional<Community> community = Optional.empty();
         if (request.getCommunityName() != null) {
@@ -111,8 +109,8 @@ public class PostService {
     public PostUpdateResponse updateService(@Valid PostUpdateRequest request, Long loginId, Long postId) {
 
         Post post = getPostById(postId);
-
-        validateAuthorization(loginId, postId);
+        Long profileId = post.getProfile().getProfileId();
+        validateAuthorization(loginId, profileId);
 
         // 제목 수정
         if (request.getTitle() != null) {
@@ -130,8 +128,10 @@ public class PostService {
     // Post 삭제
     @Transactional
     public void deletePost(Long loginId, Long postId) {
-        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new CustomException(NOT_FOUND_POST));
-        validateAuthorization(loginId, postId);
+        Post post = getPostById(postId);
+        Long profileId = post.getProfile().getProfileId();
+        validateAuthorization(loginId, profileId);
+
         post.softDelete();
     }
 
@@ -142,5 +142,14 @@ public class PostService {
                 () -> new CustomException(NOT_FOUND_POST)
         );
         return post;
+    }
+
+    // profileId 일치하는 Profile 가져오기
+    // profileId 일치하는 Profile 없으면 예외 처리
+    private Profile getProfile(Long profileId) {
+        Profile profile = profileRepository.findById(profileId).orElseThrow(
+                () -> new CustomException(NOT_FOUND_PROFILE)
+        );
+        return profile;
     }
 }

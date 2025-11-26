@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfileReadResponse {
-    private long profileId;
+    private Long profileId;
     private String profilename;
     private String email;
     private LocalDateTime createdAt;

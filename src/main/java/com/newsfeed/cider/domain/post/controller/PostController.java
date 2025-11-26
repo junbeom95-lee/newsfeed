@@ -11,7 +11,6 @@ import com.newsfeed.cider.domain.post.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,35 +35,38 @@ public class PostController {
 
     // 전체 Post 조회
     @GetMapping
-    public ResponseEntity<CommonResponse<Page<PostGetResponse>>> getPost(
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "modifiedAt") String sortBy
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getAllPost(page, size, sortBy)));
+        PagedModel result = new PagedModel<>(postService.getAllPost(page, size, sortBy));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
     }
 
     // 특정 조건의 Post만 조회
     @GetMapping("/search")
-    public ResponseEntity<CommonResponse<Page<PostGetResponse>>> getSearchedPost(
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getSearchedPost(
             @ModelAttribute PostSearchCond condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "modifiedAt") String sortBy
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getSearchedPost(condition, page, size, sortBy)));
+        PagedModel result = new PagedModel<>(postService.getSearchedPost(condition, page, size, sortBy));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
     }
 
     // loginId가 작성한 Post 조회 (My Post 조회)
     @GetMapping("/me")
-    public ResponseEntity<CommonResponse<Page<PostGetResponse>>> getPost(
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "modifiedAt") String sortBy,
             HttpSession session
     ) {
         Long loginId = (Long) session.getAttribute("loginId");
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getAllPostById(loginId, page, size, sortBy)));
+        PagedModel result = new PagedModel<>(postService.getAllPostById(loginId, page, size, sortBy));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
     }
 
     // 단건 Post 조회

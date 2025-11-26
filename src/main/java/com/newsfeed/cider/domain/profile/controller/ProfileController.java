@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ProfileController {
@@ -32,6 +34,14 @@ public class ProfileController {
         Long nowLoginProfileId = (sessionUser != null) ? sessionUser.getUserId() : null;
 
         ProfileReadResponse response = profileService.getProfile(profileId, nowLoginProfileId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
+    }
+
+    //전체 유저 조회(탈퇴 사용자 제외)
+    @GetMapping("/profiles")
+    public ResponseEntity<CommonResponse<List<ProfileReadResponse>>> getAllProfiles(){
+        List<ProfileReadResponse> response = profileService.getAllProfiles();
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
     }

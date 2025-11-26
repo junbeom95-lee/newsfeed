@@ -51,7 +51,6 @@ public class ProfileController {
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfile(@PathVariable Long profileId,
                                                                                @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
                                                                                @RequestBody ProfileUpdateRequest request){
-        checkLogin(sessionUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfile(sessionUser.getUserId(), profileId, request)));
     }
@@ -60,7 +59,6 @@ public class ProfileController {
     @PutMapping("/profile/{profileId}/public")
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePublic(@PathVariable Long profileId,
                                                                                @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
-        checkLogin(sessionUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePublic(sessionUser.getUserId(), profileId)));
     }
@@ -69,7 +67,7 @@ public class ProfileController {
     @PutMapping("/profile/{profileId}/private")
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePrivate(@PathVariable Long profileId,
                                                                                @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
-        checkLogin(sessionUser);
+
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePrivate(sessionUser.getUserId(), profileId)));
     }
@@ -113,19 +111,12 @@ public class ProfileController {
     public ResponseEntity<CommonResponse<Void>> deleteProfile(
             @PathVariable Long profileId, @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             HttpSession session){
-        checkLogin(sessionUser);
 
         profileService.deleteProfile(sessionUser.getUserId(), profileId);
         session.invalidate();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new CommonResponse<>(HttpStatus.OK, null));
-    }
-
-    private void checkLogin(SessionUser sessionUser) {
-        if (sessionUser == null) {
-            throw new CustomException(ExceptionCode.NOT_LOGGED_IN);
-        }
     }
 
 

@@ -20,6 +20,9 @@
 ### 참고자료
 <img width="3840" height="1920" alt="image" src="https://github.com/user-attachments/assets/7017a1aa-1abe-420f-a754-71a4c3da21a7" />
 
+#### 참고 사이트
+https://www.reddit.com/
+https://www.instagram.com/
 ---
 ## 테이블 명세서
 

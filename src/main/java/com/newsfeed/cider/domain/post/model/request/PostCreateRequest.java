@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class PostCreateRequest {
 
-    @NotBlank(message = "제목을 작성하지 않았습니다.")
+    @NotBlank
     private String title;
 
-    @NotBlank(message = "내용을 작성하지 않았습니다.")
+    @NotBlank
     private String content;
 
     private String communityName;

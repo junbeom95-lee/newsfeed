@@ -6,10 +6,20 @@ import lombok.Getter;
 public enum ValidCode { //Valid 오류 메시지 Enum
 
     //프로필
+    EMAIL_EMAIL("email", "Email", "이메일 형식이 아닙니다. 다시 확인해주세요"),
+    NOT_BLANK_PROFILENAME("profilename", "NotBlank", "유저명을 적어주세요. 다시 확인해주세요"),
+    SIZE_PROFILENAME("profilename", "Size", "유저명은 4자리를 넘을 수 없습니다"),
+    NOT_BLANK_PASSWORD("password", "NotBlank", "비빌번호를 적어주세요. 다시 확인해주세요"),
+    SIZE_PASSWORD("password", "Size", "비밀번호가 너무 짧습니다"),
 
     //게시글
     NOT_BLANK_POST_TITLE("title", "NotBlank", "제목을 작성하지 않았습니다."),
     NOT_BLANK_POST_CONTENT("content", "NotBlank","내용을 작성하지 않았습니다."),
+    DATE_TIME_FORMAT_START_DATE("startDate", "DateTimeFormat", "시작 날짜를 입력해주세요"),
+    DATE_TIME_FORMAT_END_DATE("endDate", "DateTimeFormat", "종료 날짜를 입력해주세요"),
+    TYPE_MISMATCH_START_DATE("startDate", "typeMismatch", "시작 날짜를 다시 확인해주세요"),
+    TYPE_MISMATCH_END_DATE("endDate", "typeMismatch", "종료 날짜를 다시 확인해주세요"),
+
 
     //댓글
 
@@ -40,7 +50,7 @@ public enum ValidCode { //Valid 오류 메시지 Enum
                 return valid.message;
             }
         }
-        return null;
+        return "올바르지 않은 입력입니다";
     }
 
 }

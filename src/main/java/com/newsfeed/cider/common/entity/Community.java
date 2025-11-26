@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "community")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@SQLRestriction("deleted_at IS NULL")
+@SQLRestriction("deleted_at IS NULL")
 public class Community extends BaseEntity {
 
     @Id

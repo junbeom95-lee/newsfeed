@@ -31,7 +31,7 @@ public class Profile extends BaseEntity {
     private String password;            //비밀번호
 
     @Column(name = "is_private")
-    private Boolean isPrivate = false;           //비공개 설정(기본값: 공개)
+    private Boolean isPrivate = false;  //비공개 설정(기본값: 공개)
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;    //삭제 여부 및 시점

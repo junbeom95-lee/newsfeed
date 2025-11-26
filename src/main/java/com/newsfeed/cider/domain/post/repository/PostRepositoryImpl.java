@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.newsfeed.cider.common.entity.QPost.post;
@@ -75,19 +77,28 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     // 입력된 기간에 작성된 Post 조회
-    private BooleanExpression createdBetween(
-            java.time.LocalDateTime startDate,
-            java.time.LocalDateTime endDate
-    ) {
+    private BooleanExpression createdBetween(LocalDate startDate, LocalDate endDate) {
+
         if (startDate == null && endDate == null) {
             return null;
         }
-        if (startDate != null && endDate != null) {
-            return post.createdAt.between(startDate, endDate);
-        }
+
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+
         if (startDate != null) {
-            return post.createdAt.goe(startDate);
+            start = startDate.atStartOfDay();
         }
-        return post.createdAt.loe(endDate);
+        if (endDate != null) {
+            end = endDate.plusDays(1).atStartOfDay();
+        }
+
+        if (start != null && end != null) {
+            return post.createdAt.goe(start).and(post.createdAt.lt(end));
+        }
+        if (start != null) {
+            return post.createdAt.goe(start);
+        }
+        return post.createdAt.lt(end);
     }
 }

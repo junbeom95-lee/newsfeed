@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profiles")
+@RequestMapping("/profile")
 public class FollowController {
 // - Properties
     private final FollowService followService;
@@ -34,7 +34,7 @@ public class FollowController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     // - UnFollow
-    @DeleteMapping("/{followeeId}/follow")
+    @DeleteMapping("/{followeeId}/unfollow")
     public ResponseEntity<CommonResponse<FollowResponse>> unfollow(
             @SessionAttribute(name = "longinUser") SessionUser loginUser,
             @PathVariable Long followeeId) {
@@ -46,26 +46,65 @@ public class FollowController {
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    // - Get Following List
-    @GetMapping("/following")
-    public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getFollowingList(
+    // - Get My Following List
+    @GetMapping("/me/following")
+    public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getMyFollowingList(
             @SessionAttribute(name = "loginUser") SessionUser loginUser) {
-        Long followerId = loginUser.getUserId();
-        List<SummaryProfileResponse> result = followService.getFollowingList(followerId);
+        Long loginUserId = loginUser.getUserId();
+        List<SummaryProfileResponse> result = followService.getMyFollowingList(loginUserId);
 
         CommonResponse<List<SummaryProfileResponse>> response =
                 new CommonResponse<>(HttpStatus.OK, result);
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    // - Get Follower List
-    @GetMapping("/follower")
-    public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getFollowerList(
+    // - Get My Follower List
+    @GetMapping("/me/follower")
+    public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getMyFollowerList(
             @SessionAttribute(name = "loginUser") SessionUser loginUser) {
-        Long followeeId = loginUser.getUserId();
-        List<SummaryProfileResponse> result = followService.getFollowerList(followeeId);
+        Long loginUserId = loginUser.getUserId();
+        List<SummaryProfileResponse> result = followService.getMyFollowerList(loginUserId);
 
         CommonResponse<List<SummaryProfileResponse>> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - Get AnotherProfile Following List
+    @GetMapping("/{profileId}/following")
+    public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getOtherFollowingList(
+            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @PathVariable Long profileId) {
+        Long loginUserId = loginUser.getUserId();
+        List<SummaryProfileResponse> result = followService.getOtherFollowingList(loginUserId, profileId);
+
+        CommonResponse<List<SummaryProfileResponse>> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - Get AnotherProfile Follower List
+    @GetMapping("/{profileId}/follower")
+    public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getOtherFollowerList(
+            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @PathVariable Long profileId) {
+        Long loginUserId = loginUser.getUserId();
+        List<SummaryProfileResponse> result = followService.getOtherFollowerList(loginUserId, profileId);
+
+        CommonResponse<List<SummaryProfileResponse>> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - Check Followed
+    @GetMapping("/{followeeId}/isFollow")
+    public ResponseEntity<CommonResponse<Boolean>> getIsFollowed(
+            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @PathVariable Long followeeId) {
+        Long loginId = loginUser.getUserId();
+        boolean result = followService.getIsFollowed(loginId, followeeId);
+
+        CommonResponse<Boolean> response =
                 new CommonResponse<>(HttpStatus.OK, result);
 
         return ResponseEntity.status(response.getStatus()).body(response);

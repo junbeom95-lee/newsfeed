@@ -26,6 +26,8 @@ public enum ExceptionCode {
     //커뮤니티 그룹
     EXIST_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하는 커뮤니티입니다"),
     NOT_FOUND_COMMUNITY(HttpStatus.BAD_REQUEST, "존재하지 않은 커뮤니티입니다"),
+    ALREADY_JOINED(HttpStatus.BAD_REQUEST, "이미 해당 커뮤니티에 가입 중입니다."),
+    NOT_JOINED(HttpStatus.BAD_REQUEST, "해당 커뮤니티에 가입되어 있지 않습니다."),
 
     //인증
     NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED,  "로그인이 되어 있지 않습니다."),

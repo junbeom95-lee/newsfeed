@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ProfileController {
@@ -27,8 +29,20 @@ public class ProfileController {
 
     //프로필 정보 보기
     @GetMapping("/profile/{profileId}")
-    public ResponseEntity<CommonResponse<ProfileReadResponse>> getProfile(@PathVariable Long profileId){
-        ProfileReadResponse response = profileService.getProfile(profileId);
+    public ResponseEntity<CommonResponse<ProfileReadResponse>> getProfile(@PathVariable Long profileId,
+                                                                          @SessionAttribute(name = "loginUser", required = false ) SessionUser sessionUser) {
+        Long nowLoginProfileId = (sessionUser != null) ? sessionUser.getUserId() : null;
+
+        ProfileReadResponse response = profileService.getProfile(profileId, nowLoginProfileId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
+    }
+
+    //전체 유저 조회(탈퇴 사용자 제외)
+    @GetMapping("/profiles")
+    public ResponseEntity<CommonResponse<List<ProfileReadResponse>>> getAllProfiles(){
+        List<ProfileReadResponse> response = profileService.getAllProfiles();
+
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, response));
     }
 
@@ -37,9 +51,25 @@ public class ProfileController {
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfile(@PathVariable Long profileId,
                                                                                @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
                                                                                @RequestBody ProfileUpdateRequest request){
-        checkLogin(sessionUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfile(sessionUser.getUserId(), profileId, request)));
+    }
+
+    //계정 공개 설정
+    @PutMapping("/profile/{profileId}/public")
+    public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePublic(@PathVariable Long profileId,
+                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePublic(sessionUser.getUserId(), profileId)));
+    }
+
+    //계정 비공개 설정
+    @PutMapping("/profile/{profileId}/private")
+    public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePrivate(@PathVariable Long profileId,
+                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePrivate(sessionUser.getUserId(), profileId)));
     }
 
 
@@ -81,19 +111,12 @@ public class ProfileController {
     public ResponseEntity<CommonResponse<Void>> deleteProfile(
             @PathVariable Long profileId, @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             HttpSession session){
-        checkLogin(sessionUser);
 
         profileService.deleteProfile(sessionUser.getUserId(), profileId);
         session.invalidate();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new CommonResponse<>(HttpStatus.OK, null));
-    }
-
-    private void checkLogin(SessionUser sessionUser) {
-        if (sessionUser == null) {
-            throw new CustomException(ExceptionCode.FORBIDDEN);
-        }
     }
 
 

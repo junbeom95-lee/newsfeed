@@ -6,21 +6,26 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfileCreateResponse {
     private Long id;
-    private String email;
     private String profilename;
-    private String password;
+    private String email;
+    private LocalDateTime createdAt;
+    private Boolean isPrivate;
+
 
     public static ProfileCreateResponse from(Profile profile) {
         return new ProfileCreateResponse(
                 profile.getProfileId(),
                 profile.getName(),
                 profile.getEmail(),
-                profile.getPassword()
+                profile.getCreatedAt(),
+                profile.getIsPrivate()
         );
     }
 

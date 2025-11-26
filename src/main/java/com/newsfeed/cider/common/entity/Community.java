@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "community")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted_at IS NULL")
+//@SQLRestriction("deleted_at IS NULL")
 public class Community extends BaseEntity {
 
     @Id
@@ -26,11 +26,16 @@ public class Community extends BaseEntity {
     private String info;            //커뮤니티 설명
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;//삭제 여부 시점
 
-    public Community(String communityName, String info) {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "create_id", nullable = false)
+    private Profile profile;        //그룹을 생성한 프로필
+
+    public Community(String communityName, String info, Profile profile) {
         this.communityName = communityName;
         this.info = info;
+        this.profile = profile;
     }
 
     public void update(CommunityUpdateRequest request) {

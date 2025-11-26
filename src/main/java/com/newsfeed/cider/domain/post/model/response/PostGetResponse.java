@@ -10,14 +10,16 @@ public class PostGetResponse {
 
     private final Long id;
     private final String name;
+    private final String communityName;
     private final String title;
     private final String content;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public PostGetResponse(Long id, String name, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public PostGetResponse(Long id, String name, String communityName, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.name = name;
+        this.communityName = communityName;
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
@@ -26,9 +28,16 @@ public class PostGetResponse {
 
     // Post를 PostGetResponse 만들어주는 정적 팩토리 메서드
     public static PostGetResponse from(Post post) {
+
+        String communityName = null;
+        if (post.getCommunity() != null) {
+            communityName = post.getCommunity().getCommunityName();
+        }
+
         return new PostGetResponse(
                 post.getPostId(),
                 post.getProfile().getName(),
+                communityName,
                 post.getTitle(),
                 post.getContent(),
                 post.getCreatedAt(),

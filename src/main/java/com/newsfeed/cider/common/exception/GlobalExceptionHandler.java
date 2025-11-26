@@ -2,6 +2,7 @@ package com.newsfeed.cider.common.exception;
 
 import com.newsfeed.cider.common.enums.ValidCode;
 import com.newsfeed.cider.common.model.CommonResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -57,12 +59,14 @@ public class GlobalExceptionHandler {
 
         //2. 에러들 각각 map에 (key : 필드, value : message) 담기
         allErrors.forEach(error -> {
-            String field = ((FieldError) error).getField();
-            String message = ValidCode.getMessage(field, ((FieldError) error).getCode());
+            if (error instanceof FieldError fieldError) {
+                String field = fieldError.getField();
+                String message = ValidCode.getMessage(field, fieldError.getCode());
 
-            map.put(field, message);
-                }
-        );
+
+                map.put(field, message);
+            }
+        });
 
         return map;
     }

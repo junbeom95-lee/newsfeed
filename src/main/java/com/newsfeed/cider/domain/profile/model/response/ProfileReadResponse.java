@@ -13,12 +13,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfileReadResponse {
-    private long profileId;
+    private Long profileId;
     private String profilename;
     private String email;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
+    private Boolean isPrivate;
 
     public static ProfileReadResponse from(Profile profile) {
         return new ProfileReadResponse(
@@ -26,8 +25,7 @@ public class ProfileReadResponse {
                 profile.getName(),
                 profile.getEmail(),
                 profile.getCreatedAt(),
-                profile.getModifiedAt(),
-                profile.getDeletedAt()
+                profile.getIsPrivate()
 
         );
     }

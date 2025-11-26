@@ -1,9 +1,11 @@
 package com.newsfeed.cider.domain.community.controller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
+import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
 import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
 import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
+import com.newsfeed.cider.domain.community.model.response.CommunityGetOneResponse;
 import com.newsfeed.cider.domain.community.model.response.CommunityGetResponse;
 import com.newsfeed.cider.domain.community.model.response.CommunityUpdateResponse;
 import com.newsfeed.cider.domain.community.service.CommunityService;
@@ -26,9 +28,11 @@ public class CommunityController {
      * @return CreateCommunityResponse (communityId, communityName, info, createdAt)
      */
     @PostMapping()
-    public ResponseEntity<CommonResponse<CommunityCreateResponse>> create(@RequestBody @Valid CommunityCreateRequest request) {
+    public ResponseEntity<CommonResponse<CommunityCreateResponse>> create(
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @RequestBody @Valid CommunityCreateRequest request) {
 
-        CommonResponse<CommunityCreateResponse> result = communityService.create(request);
+        CommonResponse<CommunityCreateResponse> result = communityService.create(sessionUser, request);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -50,14 +54,15 @@ public class CommunityController {
     }
 
     /**
-     * 그룹 단건 조회
-     * @param communityName 커뮤니티 그룹 이름
-     * @return GetCommunityResponse (communityId, communityName, info, createdAt)
+     *
+     * @param communityName
+     * @return CommunityGetOneResponse (communityId, communityName, info, countPost, createdAt)
      */
     @GetMapping("/{communityName}")
-    public ResponseEntity<CommonResponse<CommunityGetResponse>> getOneCommunity(@PathVariable String communityName) {
+    public ResponseEntity<CommonResponse<CommunityGetOneResponse>> getOneCommunity(
+            @PathVariable String communityName) {
 
-        CommonResponse<CommunityGetResponse> result = communityService.getOneCommunity(communityName);
+        CommonResponse<CommunityGetOneResponse> result = communityService.getOneCommunity(communityName);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -70,10 +75,11 @@ public class CommunityController {
      */
     @PutMapping("/{communityName}")
     public ResponseEntity<CommonResponse<CommunityUpdateResponse>> update(
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable String communityName,
-            @RequestBody CommunityUpdateRequest request) {
+            @RequestBody @Valid CommunityUpdateRequest request) {
 
-        CommonResponse<CommunityUpdateResponse> result = communityService.update(communityName, request);
+        CommonResponse<CommunityUpdateResponse> result = communityService.update(sessionUser, communityName, request);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -84,9 +90,11 @@ public class CommunityController {
      * @return OK, null
      */
     @DeleteMapping("/{communityName}")
-    public ResponseEntity<CommonResponse<Void>> delete(@PathVariable String communityName) {
+    public ResponseEntity<CommonResponse<Void>> delete(
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @PathVariable String communityName) {
 
-        CommonResponse<Void> result = communityService.delete(communityName);
+        CommonResponse<Void> result = communityService.delete(sessionUser, communityName);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }

@@ -27,9 +27,9 @@ public class PostController {
     public ResponseEntity<CommonResponse<PostCreateResponse>> createPost(
             @Valid @RequestBody PostCreateRequest request, HttpSession session
     ) {
-        Long loginId = (Long) session.getAttribute("loginId");
+//        Long loginId = (Long) session.getAttribute("loginId");
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new CommonResponse<>(HttpStatus.CREATED, postService.savePost(request, loginId)));
+                .body(new CommonResponse<>(HttpStatus.CREATED, postService.savePost(request, 1L)));
     }
 
     // 전체 Post 조회

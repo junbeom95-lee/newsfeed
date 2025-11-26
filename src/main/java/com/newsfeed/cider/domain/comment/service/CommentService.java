@@ -1,16 +1,21 @@
 package com.newsfeed.cider.domain.comment.service;
 
 import com.newsfeed.cider.common.entity.Comment;
-
 import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
+import com.newsfeed.cider.common.enums.ExceptionCode;
+import com.newsfeed.cider.common.exception.CustomException;
+import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.common.model.SessionUser;
-import com.newsfeed.cider.domain.comment.model.request.CommentRequestDto;
-import com.newsfeed.cider.domain.comment.model.response.CommentResponseDto;
+import com.newsfeed.cider.domain.comment.model.request.CommentCreateRequest;
+import com.newsfeed.cider.domain.comment.model.request.CommentUpdateRequest;
+import com.newsfeed.cider.domain.comment.model.response.CommentCreateResponse;
+import com.newsfeed.cider.domain.comment.model.response.CommentUpdateResponseDto;
 import com.newsfeed.cider.domain.comment.repository.CommentRepository;
 import com.newsfeed.cider.domain.post.repository.PostRepository;
 import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,64 +24,86 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final ProfileRepository profileRepository;
 
-    @Transactional
-    public CommentResponseDto createComment(SessionUser sessionUser, Long postId, Long parentId, CommentRequestDto dto) {
+    // 댓글 등록
+    public CommonResponse<CommentCreateResponse> createComment(SessionUser sessionUser, Long postId, Long parentId, CommentCreateRequest request) {
+        Post post = postRepository.findByPostId(postId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST));
 
-        //1.요청을 entity객체로 만든다.
-        //데이터타입  데이터명  =  new 데이터 타입
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
+        Profile profile = profileRepository.findById(sessionUser.getUserId())
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
-        //profile parentId content
-        Profile profile = profileRepository.findById(sessionUser.getUserId()).orElseThrow(()
-                ->new IllegalArgumentException("아이디가 존재하지 않습니다."));
-        Comment comment = new Comment(post, profile , parentId, dto.getContent());
+        Comment comment = new Comment(post, profile, parentId, request.getContent());
 
-        //2.저장한다.
-        Comment savedComment =commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
 
-        //3.저장된 객체를 dto에 담는다.
-        return  CommentResponseDto.from(savedComment);
+        CommentCreateResponse dto = CommentCreateResponse.from(savedComment);
 
+        return new CommonResponse<>(HttpStatus.CREATED, dto);
     }
+
+    // 댓글 조회 (공개 조회이므로 작성자 검증 생략; 전체 댓글 리스트 반환)
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> getComments(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
-        return commentRepository.findByPost(post)
-                .stream()
-                .map(CommentResponseDto::from)
+    public CommonResponse<List<CommentUpdateResponseDto>> getComments(Long postId) {
+        Post post = postRepository.findByPostId(postId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST));
+
+        List<Comment> allComments = commentRepository.findByPost(post);
+        List<Comment> topLevelComments = allComments.stream()
+                .filter(c -> c.getParentId() == null)
                 .collect(Collectors.toList());
+
+        List<CommentUpdateResponseDto> dtos = topLevelComments.stream()
+                .map(comment -> CommentUpdateResponseDto.from(comment, getChildrenComments(comment, allComments)))
+                .collect(Collectors.toList());
+
+        return new CommonResponse<>(HttpStatus.OK, dtos);
     }
 
+    // 댓글 수정 (작성자 검증 포함)
     @Transactional
-    public CommentResponseDto updateComment(SessionUser sessionUser,Long commentId, CommentRequestDto dto) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(()
-                ->new IllegalArgumentException("댓글 작성되지 않았습니다."));
-        return CommentResponseDto.from(comment);
+    public CommonResponse<CommentUpdateResponseDto> updateComment(SessionUser sessionUser, Long commentId, CommentUpdateRequest request) {
+        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser);
+
+        comment.updateContent(request.getContent());  // 엔티티 update 메서드 호출 가정
+        Comment updatedComment = commentRepository.save(comment);
+
+        // 자식 댓글 리스트 조회
+        List<Comment> children = commentRepository.findByParentId(commentId);
+
+        CommentUpdateResponseDto dto = CommentUpdateResponseDto.from(updatedComment, children);
+
+        return new CommonResponse<>(HttpStatus.OK, dto);
     }
 
-
+    // 댓글 삭제 (작성자 검증 포함)
     @Transactional
     public void deleteComment(Long commentId, SessionUser sessionUser) {
         Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser);
         commentRepository.delete(comment);
     }
 
+    // 작성자 검증 (공통 메서드: 조회/수정/삭제에서 재사용)
     private Comment getCommentByIdAndSessionUser(Long commentId, SessionUser sessionUser) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT));
 
         if (!comment.getProfile().getProfileId().equals(sessionUser.getUserId())) {
-            throw new IllegalArgumentException("작성자만 수정/삭제할 수 있습니다.");
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);  // 권한 없음: ACCESS_DENIED 사용
         }
         return comment;
+    }
+
+    // 자식 댓글 재귀 조회 (트리 빌드 헬퍼)
+    private List<Comment> getChildrenComments(Comment parent, List<Comment> allComments) {
+        return allComments.stream()
+                .filter(c -> parent.getCommentId().equals(c.getParentId()))
+                .collect(Collectors.toList());
     }
 }

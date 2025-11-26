@@ -11,6 +11,7 @@ import com.newsfeed.cider.domain.post.model.response.PostCreateResponse;
 import com.newsfeed.cider.domain.post.model.response.PostGetResponse;
 import com.newsfeed.cider.domain.post.model.response.PostUpdateResponse;
 import com.newsfeed.cider.domain.post.repository.PostRepository;
+import com.newsfeed.cider.domain.profile.repository.ProfileRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,12 +29,17 @@ import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final ProfileRepository profileRepository;
+
 
     // Post 생성
     @Transactional
     public PostCreateResponse savePost(@Valid PostCreateRequest request, Long loginId) {
 
-        Profile profile = getProfileById(loginId);
+//        Profile profile = getProfileById(loginId);
+        Profile profile = profileRepository.findById(loginId).orElseThrow(
+                () -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+
 
         Community community = null;
         if (request.getCommunityId() != null) {

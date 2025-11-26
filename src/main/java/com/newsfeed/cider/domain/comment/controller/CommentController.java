@@ -5,7 +5,8 @@ import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.comment.model.request.CommentCreateRequest;
 import com.newsfeed.cider.domain.comment.model.request.CommentUpdateRequest;
 import com.newsfeed.cider.domain.comment.model.response.CommentCreateResponse;
-import com.newsfeed.cider.domain.comment.model.response.CommentUpdateResponseDto;
+import com.newsfeed.cider.domain.comment.model.response.CommentGetResponse;
+import com.newsfeed.cider.domain.comment.model.response.CommentUpdateResponse;
 import com.newsfeed.cider.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
 public class CommentController {
 
     private final CommentService commentService;
@@ -34,29 +34,30 @@ public class CommentController {
 
     // 댓글 조회
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommonResponse<List<CommentUpdateResponseDto>>> getComments(@PathVariable Long postId) {
-        CommonResponse<List<CommentUpdateResponseDto>> result = commentService.getComments(postId);
+    public ResponseEntity<CommonResponse<List<CommentGetResponse>>> getComments(@PathVariable Long postId) {
+        CommonResponse<List<CommentGetResponse>> result = commentService.getComments(postId);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     // 댓글 수정
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<CommonResponse<CommentUpdateResponseDto>> updateComment(
+    public ResponseEntity<CommonResponse<CommentUpdateResponse>> updateComment(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long commentId,
             @RequestBody CommentUpdateRequest request  // CommentRequestDto → CommentUpdateRequest
     ) {
-        CommonResponse<CommentUpdateResponseDto> result = commentService.updateComment(sessionUser, commentId, request);
+        CommonResponse<CommentUpdateResponse> result = commentService.updateComment(sessionUser, commentId, request);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     // 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<String> deleteComment(
+    public ResponseEntity<CommonResponse<Void>> deleteComment(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long commentId
     ) {
-        commentService.deleteComment(commentId, sessionUser);
-        return ResponseEntity.ok("댓글삭제");  // Postman body에 "댓글삭제" 출력, status 200 OK
+        CommonResponse<Void> result = commentService.deleteComment(commentId, sessionUser);
+
+        return ResponseEntity.ok(result);
     }
 }

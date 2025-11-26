@@ -18,7 +18,7 @@ public class CommentLikeController {
 
     private final CommentLikeService commentLikeService;
 
-    @PostMapping("/{commentId}/unlikes")
+    @PostMapping("/{commentId}/likes")
     public ResponseEntity<CommonResponse<CommentLikeResponse>> likePost(
             @PathVariable Long commentId,
             HttpSession session

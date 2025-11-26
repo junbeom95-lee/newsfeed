@@ -3,6 +3,7 @@ package com.newsfeed.cider.domain.follow.Controller;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.follow.Service.FollowService;
+import com.newsfeed.cider.domain.follow.model.response.FollowRequestResponse;
 import com.newsfeed.cider.domain.follow.model.response.FollowResponse;
 import com.newsfeed.cider.domain.profile.model.response.SummaryProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,20 @@ public class FollowController {
     public ResponseEntity<CommonResponse<FollowResponse>> unfollow(
             @SessionAttribute(name = "longinUser") SessionUser loginUser,
             @PathVariable Long followeeId) {
-        Long followerId = loginUser.getUserId();
-        FollowResponse result = followService.unfollow(followerId, followeeId);
+        Long loginUserId = loginUser.getUserId();
+        FollowResponse result = followService.unfollow(loginUserId, followeeId);
 
         CommonResponse<FollowResponse> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - Get AllFollows
+    @GetMapping("/master/follows")
+    public ResponseEntity<CommonResponse<List<FollowResponse>>> getFollows() {
+        List<FollowResponse> result = followService.getAll();
+
+        CommonResponse<List<FollowResponse>> response =
                 new CommonResponse<>(HttpStatus.OK, result);
 
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -101,10 +112,48 @@ public class FollowController {
     public ResponseEntity<CommonResponse<Boolean>> getIsFollowed(
             @SessionAttribute(name = "loginUser") SessionUser loginUser,
             @PathVariable Long followeeId) {
-        Long loginId = loginUser.getUserId();
-        boolean result = followService.getIsFollowed(loginId, followeeId);
+        Long loginUserId = loginUser.getUserId();
+        boolean result = followService.getIsFollowed(loginUserId, followeeId);
 
         CommonResponse<Boolean> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - Get FollowRequestList
+    @GetMapping("/me/followrequests")
+    public ResponseEntity<CommonResponse<List<FollowRequestResponse>>> getFollowRequests(
+            @SessionAttribute(name = "loginUser") SessionUser loginUser) {
+        Long loginUserId = loginUser.getUserId();
+        List<FollowRequestResponse> result = followService.getFollowRequestList(loginUserId);
+
+        CommonResponse<List<FollowRequestResponse>> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - FollowRequest Accept
+    @PutMapping("/followrequest/{followId}/accept")
+    public ResponseEntity<CommonResponse<FollowResponse>> acceptFollow(
+            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @PathVariable Long followId) {
+        Long loginUserId = loginUser.getUserId();
+        FollowResponse result = followService.approveFollowRequest(loginUserId, followId);
+
+        CommonResponse<FollowResponse> response =
+                new CommonResponse<>(HttpStatus.OK, result);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    // - FollowRequest Reject
+    @PutMapping("/followrequest/{followId}/reject")
+    public ResponseEntity<CommonResponse<FollowResponse>> rejectFollow(
+            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @PathVariable Long followId) {
+        Long loginUserId = loginUser.getUserId();
+        FollowResponse result = followService.rejectFollowRequest(loginUserId, followId);
+
+        CommonResponse<FollowResponse> response =
                 new CommonResponse<>(HttpStatus.OK, result);
 
         return ResponseEntity.status(response.getStatus()).body(response);

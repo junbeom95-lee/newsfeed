@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FollowResponse {
 // - Properties
+    private final Long followId;
     private final Long followerId;
     private final Long followeeId;
 
@@ -15,6 +16,7 @@ public class FollowResponse {
     // - From Entity
     public static FollowResponse from(Follow follow) {
         return new FollowResponse(
+                follow.getFollowId(),
                 follow.getFollower().getProfileId(),
                 follow.getFollowee().getProfileId()
         );

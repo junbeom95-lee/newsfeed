@@ -33,6 +33,10 @@ public enum ExceptionCode {
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요가 되어있습니다."),
     NOT_LIKED(HttpStatus.BAD_REQUEST, "좋아요가 되어있지 않습니다."),
 
+    // 좋아요
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요가 되어있습니다."),
+    NOT_LIKED(HttpStatus.BAD_REQUEST, "좋아요가 되어있지 않습니다."),
+
     //인증
     NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED,  "로그인이 되어 있지 않습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN,  "해당 작업을 수행할 권한이 없습니다."),

@@ -17,15 +17,15 @@ public class CommentLike extends BaseEntity {
     private Long commentLikeId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "comment_id", nullable = false)
-    private Comment comment;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    public CommentLike(Comment comment, Profile profile) {
-        this.comment = comment;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "comment_id", nullable = false)
+    private Comment comment;
+
+    public CommentLike(Profile profile, Comment comment) {
         this.profile = profile;
+        this.comment = comment;
     }
 }

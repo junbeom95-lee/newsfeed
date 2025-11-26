@@ -3,6 +3,7 @@ package com.newsfeed.cider.domain.profile.service;
 
 import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
+import com.newsfeed.cider.common.enums.FollowStatus;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.common.util.PasswordEncoder;
@@ -159,7 +160,7 @@ public class ProfileService {
         Profile followee = profileRepository.findById(followeeId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
-        return followRepository.existsByFollowerAndFollowee(follower, followee);
+        return followRepository.existsByFollowerAndFolloweeAndStatus(follower, followee, FollowStatus.ACCEPTED);
     }
 
     /*void isOwner(long nowLoginProfileId, long profileId){

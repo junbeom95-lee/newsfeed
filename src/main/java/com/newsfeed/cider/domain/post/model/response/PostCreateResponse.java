@@ -13,15 +13,17 @@ public class PostCreateResponse {
     private final String communityName;
     private final String title;
     private final String content;
+    private final Long likeCount;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public PostCreateResponse(Long id, String name, String communityName, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public PostCreateResponse(Long id, String name, String communityName, String title, String content, Long likeCount, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.name = name;
         this.communityName = communityName;
         this.title = title;
         this.content = content;
+        this.likeCount = likeCount;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
@@ -40,6 +42,7 @@ public class PostCreateResponse {
                 communityName,
                 post.getTitle(),
                 post.getContent(),
+                post.getLikeCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );

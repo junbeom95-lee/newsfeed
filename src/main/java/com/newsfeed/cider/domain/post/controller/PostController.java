@@ -37,7 +37,7 @@ public class PostController {
 
     // 전체 Post 조회
     @GetMapping
-    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPost(
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getAllPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "modifiedAt") String sortBy
@@ -60,7 +60,7 @@ public class PostController {
 
     // loginId가 작성한 Post 조회 (My Post 조회)
     @GetMapping("/me")
-    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPost(
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getMyPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "modifiedAt") String sortBy,
@@ -68,6 +68,44 @@ public class PostController {
     ) {
         Long loginId = (Long) session.getAttribute("loginId");
         PagedModel result = new PagedModel<>(postService.getAllPostById(loginId, page, size, sortBy));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
+    }
+
+    // follow한 유저의 post 조회
+    @GetMapping("/follow")
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPostById(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "modifiedAt") String sortBy,
+            HttpSession session
+    ) {
+        Long loginId = (Long) session.getAttribute("loginUser");
+        PagedModel result = new PagedModel<>(postService.getAllFollowPost(loginId, page, size, sortBy));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
+    }
+
+    // 내가 좋아요를 누른 post 페이징 조회
+    @GetMapping("/me/likes")
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getLikedPost(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "modifiedAt") String sortBy,
+            HttpSession session
+    ) {
+        Long loginId = (Long) session.getAttribute("loginId");
+        PagedModel result = new PagedModel<>(postService.getLikedPostById(loginId, page, size, sortBy));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
+    }
+
+    // 특정 유저가 좋아요를 누른 post 페이징 조회
+    @GetMapping("/{profileId}/likes")
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getLikedPostByProfileId(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "modifiedAt") String sortBy,
+            @PathVariable Long profileId
+    ) {
+        PagedModel result = new PagedModel<>(postService.getLikedPostById(profileId, page, size, sortBy));
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, result));
     }
 

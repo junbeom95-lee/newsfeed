@@ -20,10 +20,8 @@ public enum ValidCode { //Valid 오류 메시지 Enum
     TYPE_MISMATCH_START_DATE("startDate", "typeMismatch", "시작 날짜를 다시 확인해주세요"),
     TYPE_MISMATCH_END_DATE("endDate", "typeMismatch", "종료 날짜를 다시 확인해주세요"),
 
-
     //댓글
-
-    //팔로우
+    NOT_BLANK_COMMENT_CONTENT("content", "NotBlank", "댓글 내용을 작성해주세요"),
 
     //그룹
     NOT_BLANK_COMMUNITY_NAME("communityName", "NotBlank", "커뮤니티 이름을 적어주세요");

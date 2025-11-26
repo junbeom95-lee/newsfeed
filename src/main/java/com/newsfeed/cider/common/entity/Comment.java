@@ -33,8 +33,12 @@ public class Comment extends BaseEntity{
     @Column(nullable = false)
     private String content;             //댓글 내용
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;    //삭제 여부 및 시점
+    @Column
+    private Long likeCount = 0L;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 
     public Comment(Post post, Profile profile, Long parentId, String content) {
         this.post = post;
@@ -43,7 +47,13 @@ public class Comment extends BaseEntity{
         this.content = content;
     }
 
-    public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
     }
 }

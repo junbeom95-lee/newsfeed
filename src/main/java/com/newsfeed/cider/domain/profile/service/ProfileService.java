@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.newsfeed.cider.domain.follow.repository.FollowRepository;
 
+import java.util.List;
+
 import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -127,6 +129,14 @@ public class ProfileService {
         }
         return ProfileReadResponse.from(profile);
 
+    }
+
+    //전체 사용자 조회(탈퇴 사용자 제외)
+    @Transactional(readOnly = true)
+    public List<ProfileReadResponse> getAllProfiles(){
+        List<Profile> profiles = profileRepository.findAllByDeletedAtIsNull();
+
+        return profiles.stream().map(ProfileReadResponse::from).toList();
     }
 
     @Transactional(readOnly = true)

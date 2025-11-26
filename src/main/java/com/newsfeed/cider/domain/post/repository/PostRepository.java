@@ -16,4 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     Page<Post> findAllByCommunity_CommunityId(Long communityId, Pageable pageable);
 
     Page<Post> findAllByProfile_ProfileId(Long profileId, Pageable pageable);
+
+    // 그룹의 게시글 그룹 이름으로 찾기
+    Page<Post> findAllByCommunity_CommunityName(String communityName, Pageable pageable);
+
+    long countByCommunity_CommunityId(Long communityCommunityId);
 }

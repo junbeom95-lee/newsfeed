@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,15 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<CommonResponse<PostGetResponse>> getPost(@PathVariable Long postId) {
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getOnePost(postId)));
+    }
+
+    // 특정 그룹에 대한 게시글 페이징 조회
+    @GetMapping("/{communityName}")
+    public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPost(
+            @PathVariable String communityName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getPostCommunity(communityName, page, size)));
     }
 
     // Post 수정

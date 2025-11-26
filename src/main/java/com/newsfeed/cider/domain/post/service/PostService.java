@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +92,19 @@ public class PostService {
 
         return posts.map(PostGetResponse::from);
     }
+
+    // 그룹에 대한 게시글 페이징 조회
+    public PagedModel<PostGetResponse> getPostCommunity(String communityName, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Post> posts = postRepository.findAllByCommunity_CommunityName(communityName, pageable);
+
+        Page<PostGetResponse> postDtoPages = posts.map(PostGetResponse::from);
+
+        return new PagedModel<>(postDtoPages);
+    }
+
 
     // Post 수정
     @Transactional

@@ -54,17 +54,15 @@ public class CommunityController {
     }
 
     /**
-     * 그룹 단건 조회
-     * @param communityName 커뮤니티 그룹 이름
-     * @return GetCommunityResponse (communityId, communityName, info, createdAt)
+     *
+     * @param communityName
+     * @return CommunityGetOneResponse (communityId, communityName, info, countPost, createdAt)
      */
     @GetMapping("/{communityName}")
     public ResponseEntity<CommonResponse<CommunityGetOneResponse>> getOneCommunity(
-            @PathVariable String communityName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @PathVariable String communityName) {
 
-        CommonResponse<CommunityGetOneResponse> result = communityService.getOneCommunity(communityName, page, size);
+        CommonResponse<CommunityGetOneResponse> result = communityService.getOneCommunity(communityName);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }

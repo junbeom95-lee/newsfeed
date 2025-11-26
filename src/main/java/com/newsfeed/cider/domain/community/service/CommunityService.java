@@ -83,23 +83,17 @@ public class CommunityService {
     /**
      * 게시글 페이징 포함한 단건 그룹 조회
      * @param communityName 그룹 이름
-     * @param page 페이지 번호
-     * @param size 페이지 크기
-     * @return CommunityGetOneResponse (communityId, communityName, info, page<PostGetResponse>, createdAt)
-     * @see com.newsfeed.cider.domain.post.model.response.PostGetResponse
+     * @return (communityId, communityName, info, countPost, createdAt)
      */
     @Transactional(readOnly = true)
-    public CommonResponse<CommunityGetOneResponse> getOneCommunity(String communityName, int page, int size) {
+    public CommonResponse<CommunityGetOneResponse> getOneCommunity(String communityName) {
 
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
-        Sort sort = Sort.by("createdAt").descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
+        long countPost = postRepository.countByCommunity_CommunityId(community.getCommunityId());
 
-        Page<Post> postPage = postRepository.findAllByCommunity_CommunityId(community.getCommunityId(), pageable);
-
-        CommunityGetOneResponse response = CommunityGetOneResponse.from(community, postPage);
+        CommunityGetOneResponse response = CommunityGetOneResponse.from(community, countPost);
 
         return new CommonResponse<>(HttpStatus.OK, response);
     }

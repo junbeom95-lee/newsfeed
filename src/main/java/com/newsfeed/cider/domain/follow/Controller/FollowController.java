@@ -37,7 +37,7 @@ public class FollowController {
     // - UnFollow
     @DeleteMapping("/{followeeId}/unfollow")
     public ResponseEntity<CommonResponse<FollowResponse>> unfollow(
-            @SessionAttribute(name = "longinUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginUser") SessionUser loginUser,
             @PathVariable Long followeeId) {
         Long loginUserId = loginUser.getUserId();
         FollowResponse result = followService.unfollow(loginUserId, followeeId);

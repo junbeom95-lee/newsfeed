@@ -7,6 +7,7 @@ import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.common.model.SessionUser;
+import com.newsfeed.cider.common.util.AuthManager;
 import com.newsfeed.cider.domain.comment.model.request.CommentCreateRequest;
 import com.newsfeed.cider.domain.comment.model.request.CommentUpdateRequest;
 import com.newsfeed.cider.domain.comment.model.response.CommentCreateResponse;
@@ -110,9 +111,8 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT));
 
-        if (!comment.getProfile().getProfileId().equals(sessionUser.getUserId())) {
-            throw new CustomException(ExceptionCode.ACCESS_DENIED);  // 권한 없음: ACCESS_DENIED 사용
-        }
+        AuthManager.validateAuthorization(commentId, sessionUser.getUserId());
+
         return comment;
     }
 }

@@ -11,6 +11,7 @@ public enum ValidCode { //Valid 오류 메시지 Enum
     SIZE_PROFILENAME("profilename", "Size", "유저명은 4자리를 넘을 수 없습니다"),
     NOT_BLANK_PASSWORD("password", "NotBlank", "비빌번호를 적어주세요. 다시 확인해주세요"),
     SIZE_PASSWORD("password", "Size", "비밀번호가 너무 짧습니다"),
+    PATTERN_PASSWORD("password", "Pattern", "비밀번호는 대문자, 소문자, 숫자, 특수문자를 각각 최소 1글자 이상 포함해야 합니다."),
 
     //게시글
     NOT_BLANK_POST_TITLE("title", "NotBlank", "제목을 작성하지 않았습니다."),

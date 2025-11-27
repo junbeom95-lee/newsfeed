@@ -59,10 +59,12 @@ public class GlobalExceptionHandler {
 
         //2. 에러들 각각 map에 (key : 필드, value : message) 담기
         allErrors.forEach(error -> {
+
             if (error instanceof FieldError fieldError) {
                 String field = fieldError.getField();
                 String message = ValidCode.getMessage(field, fieldError.getCode());
 
+                log.info("field : {}, code : {}, message {}", field, fieldError.getCode(), message);
 
                 map.put(field, message);
             }

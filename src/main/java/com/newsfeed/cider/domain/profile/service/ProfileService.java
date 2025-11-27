@@ -6,6 +6,8 @@ import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.enums.FollowStatus;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.util.PasswordEncoder;
+import com.newsfeed.cider.domain.comment.repository.CommentRepository;
+import com.newsfeed.cider.domain.post.repository.PostRepository;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileDeleteRequest;
@@ -32,6 +34,8 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
 
     public ProfileCreateResponse createProfile(ProfileCreateRequest request){
@@ -115,7 +119,8 @@ public class ProfileService {
         if(!passwordEncoder.matches(request.getPassword(), profile.getPassword())){
             throw new CustomException(ExceptionCode.WRONG_PASSWORD);
         }
-
+        commentRepository.deleteByProfile_ProfileId(profileId);
+        postRepository.deleteByProfileId(profileId);
         profile.softDelete();
         profileRepository.save(profile);
     }

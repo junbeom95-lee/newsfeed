@@ -42,7 +42,7 @@ public class CommentController {
     // 댓글 수정
     @PutMapping("/comments/{commentId}") // PUT /comments/{commentId}
     public ResponseEntity<CommonResponse<CommentUpdateResponse>> updateComment(
-            @SessionAttribute(name = "loginUser") Long userId,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long commentId,
             @RequestBody CommentUpdateRequest request  // CommentRequestDto → CommentUpdateRequest
     ) {

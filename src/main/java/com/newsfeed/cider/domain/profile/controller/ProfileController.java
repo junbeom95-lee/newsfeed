@@ -7,6 +7,7 @@ import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
+import com.newsfeed.cider.domain.profile.model.request.ProfileDeleteRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
@@ -50,7 +51,7 @@ public class ProfileController {
     @PutMapping("/profile/{profileId}")
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfile(@PathVariable Long profileId,
                                                                                @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-                                                                               @RequestBody ProfileUpdateRequest request){
+                                                                               @Valid @RequestBody ProfileUpdateRequest request){
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfile(sessionUser.getUserId(), profileId, request)));
     }
@@ -111,9 +112,9 @@ public class ProfileController {
     @DeleteMapping("/profile/{profileId}")
     public ResponseEntity<CommonResponse<Void>> deleteProfile(
             @PathVariable Long profileId, @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-            HttpSession session){
+            HttpSession session, @Valid @RequestBody ProfileDeleteRequest request){
 
-        profileService.deleteProfile(sessionUser.getUserId(), profileId);
+        profileService.deleteProfile(sessionUser.getUserId(), profileId, request);
         session.invalidate();
 
         return ResponseEntity.status(HttpStatus.OK)

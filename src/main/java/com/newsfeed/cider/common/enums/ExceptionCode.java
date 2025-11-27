@@ -37,7 +37,10 @@ public enum ExceptionCode {
     NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED,  "로그인이 되어 있지 않습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN,  "해당 작업을 수행할 권한이 없습니다."),
     ALREADY_LOGGED_IN(HttpStatus.CONFLICT, "이미 로그인이 되어 있습니다."),
-;
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다"),
+    SAME_PASSWORD(HttpStatus.BAD_REQUEST, "같은 비밀번호로 수정할 수 없습니다.");
+
+
     private final HttpStatus status;
     private final String message;
 

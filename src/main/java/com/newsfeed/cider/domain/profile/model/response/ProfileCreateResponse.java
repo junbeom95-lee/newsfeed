@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProfileCreateResponse {
     private Long id;
-    private String profilename;
+    private String profileName;
     private String email;
     private LocalDateTime createdAt;
     private Boolean isPrivate;

@@ -78,7 +78,7 @@ public class ProfileController {
     //회원가입
     @PostMapping("/signup")
     public ResponseEntity<CommonResponse<ProfileCreateResponse>> createProfile(@Valid @RequestBody ProfileCreateRequest request,
-                                                                               @SessionAttribute(name = "loginId") Long userId){
+                                                                               @SessionAttribute(name = "loginId", required = false) Long userId){
         if (userId != null) throw new CustomException(ExceptionCode.ALREADY_LOGGED_IN);
 
         ProfileCreateResponse response = profileService.createProfile(request);

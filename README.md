@@ -31,7 +31,7 @@ https://www.instagram.com/
 ---
 ## ERD 구조
 
-<img width="1842" height="1149" alt="image" src="https://github.com/user-attachments/assets/ddcef47c-2fcd-4d77-b78b-9a29d9136f5e" />
+<img width="1838" height="1157" alt="image" src="https://github.com/user-attachments/assets/b748d5d3-6146-49b9-be1a-13a1426544cf" />
 
 ---
 ## 주요 기능
@@ -59,7 +59,7 @@ https://www.instagram.com/
 
 ---
 ## 개발 기간
-* 2025.11.26 ~ 2025.11
+* 2025.11.26 ~ 2025.11.27
 
 ---
 ## 실행 화면

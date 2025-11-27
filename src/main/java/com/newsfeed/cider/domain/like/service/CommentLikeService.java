@@ -35,22 +35,22 @@ public class CommentLikeService {
                 comment
         );
         commentLikeRepository.save(commentLike);
-        long likesCount = commentLikeRepository.countByComment_CommentId(commentId);
-        return new CommentLikeResponse(commentId, true, likesCount);
+        comment.increaseLikeCount();
+        return new CommentLikeResponse(commentId, true, comment.getLikeCount());
     }
 
     // 댓글에 like 취소
     @Transactional
     public CommentLikeResponse unlikeComment(Long loginId, Long commentId) {
-        getCommentById(commentId); // Comment가 존재하는지 검증용
+        Comment comment = getCommentById(commentId);
         boolean isLike = commentLikeRepository.existsByProfile_ProfileIdAndComment_CommentId(loginId, commentId);
         if (!isLike) {
             throw new CustomException(NOT_LIKED);
         }
         CommentLike commentLike = commentLikeRepository.findByProfile_ProfileIdAndComment_CommentId(loginId, commentId);
         commentLikeRepository.delete(commentLike);
-        long likesCount = commentLikeRepository.countByComment_CommentId(commentId);
-        return new CommentLikeResponse(commentId, false, likesCount);
+        comment.decreaseLikeCount();
+        return new CommentLikeResponse(commentId, false, comment.getLikeCount());
     }
 
     // commentId가 일치하는 comment 가져오기

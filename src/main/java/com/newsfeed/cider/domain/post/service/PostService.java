@@ -92,6 +92,7 @@ public class PostService {
     }
 
     // 그룹에 대한 게시글 페이징 조회
+    @Transactional(readOnly = true)
     public PagedModel<PostGetResponse> getPostCommunity(String communityName, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -103,6 +104,19 @@ public class PostService {
         return new PagedModel<>(postDtoPages);
     }
 
+    // 입력받은 profileId가 좋아요 누른 게시글 페이징 조회
+    public Page<PostGetResponse> getLikedPostById(Long profileId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        Page<Post> posts = postRepository.findAllLikedPostsByProfileId(profileId, pageable);
+        return posts.map(PostGetResponse::from);
+    }
+
+    // follow 하는 계정의 게시글 페이징 조회
+    public Page<PostGetResponse> getAllFollowPost(Long profileId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        Page<Post> posts = postRepository.findAllFollowedPostsByProfileId(profileId, pageable);
+        return posts.map(PostGetResponse::from);
+    }
 
     // Post 수정
     @Transactional

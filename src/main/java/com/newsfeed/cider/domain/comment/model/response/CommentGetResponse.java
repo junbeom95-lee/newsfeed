@@ -19,6 +19,7 @@ public class CommentGetResponse {
     private String postTitle;
     private String postContent;
     private String profileName;
+    private Long likeCount;
     private Long parentId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -30,6 +31,7 @@ public class CommentGetResponse {
                 comment.getPost().getTitle(),
                 comment.getPost().getContent(),
                 comment.getProfile().getName(),
+                comment.getLikeCount(),
                 comment.getParentId(),
                 comment.getCreatedAt(),
                 comment.getModifiedAt()

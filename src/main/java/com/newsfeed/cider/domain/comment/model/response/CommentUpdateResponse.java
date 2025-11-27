@@ -15,6 +15,7 @@ public class CommentUpdateResponse {
     private String postTitle;
     private String postContent;
     private String profileName;
+    private Long likeCount;
     private LocalDateTime modifiedAt;
 
     public static CommentUpdateResponse from(Comment comment) {
@@ -24,6 +25,7 @@ public class CommentUpdateResponse {
                 comment.getPost().getTitle(),
                 comment.getPost().getContent(),
                 comment.getProfile().getName(),
+                comment.getLikeCount(),
                 comment.getModifiedAt());
     }
 }

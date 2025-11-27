@@ -29,6 +29,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String content;             //게시글 내용
 
+    @Column
+    private Long likeCount = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community community;        //커뮤니티 (그룹)
@@ -55,5 +58,15 @@ public class Post extends BaseEntity {
 
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
     }
 }

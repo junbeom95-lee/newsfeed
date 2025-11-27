@@ -86,6 +86,7 @@ public class ProfileController {
     public ResponseEntity<CommonResponse<Void>> login(@RequestBody LoginRequest request, HttpSession session){
         SessionUser sessionUser = profileService.login(request);
         session.setAttribute("loginUser", sessionUser);
+        session.setAttribute("loginId", sessionUser.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, null));
 

@@ -20,6 +20,7 @@ public class CommentCreateResponse {
     private String postTitle;
     private String postContent;
     private String profileName;
+    private Long likeCount;
     private Long parentId;
     private LocalDateTime createdAt;
 
@@ -31,6 +32,7 @@ public class CommentCreateResponse {
                 comment.getPost().getContent(),
                 comment.getContent(),
                 comment.getProfile().getName(),
+                comment.getLikeCount(),
                 comment.getParentId(),
                 comment.getCreatedAt());
     }

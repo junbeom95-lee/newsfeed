@@ -4,6 +4,7 @@ package com.newsfeed.cider.domain.profile.controller;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
+import com.newsfeed.cider.domain.profile.model.request.ProfileDeleteRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;

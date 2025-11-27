@@ -46,9 +46,11 @@ public class Profile extends BaseEntity {
         this.isPrivate = isPrivate;
     }
 
-    public void updateProfileInfo(String profilename, String email) {
-        this.name = profilename;
-        this.email = email;
+    public void updateProfileName(String profileName) {
+        this.name = profileName;
+    }
+    public void updateProfileEmail(String Email) {
+        this.email = Email;
     }
 
     public void updatePassword(String encodedPassword) {

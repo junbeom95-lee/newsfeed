@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProfileUpdateResponse {
     private Long id;
-    private String profilename;
+    private String profileName;
     private String email;
     private LocalDateTime createdAt;
-    private Boolean isPrviate;
+    private Boolean isPrivate;
 
     public static ProfileUpdateResponse from(Profile profile) {
         return new ProfileUpdateResponse(

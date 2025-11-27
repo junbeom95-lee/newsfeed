@@ -28,91 +28,90 @@ import java.util.stream.Collectors;
 @Transactional
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
-    private final ProfileRepository profileRepository;
+    private final CommentRepository commentRepository; // 댓글 관련 DB 접근
+    private final PostRepository postRepository; // 게시글 관련 DB 접근
+    private final ProfileRepository profileRepository; // 프로필 관련 DB 접근
 
     // 댓글 등록
     public CommonResponse<CommentCreateResponse> createComment(SessionUser sessionUser, Long postId, Long parentId, CommentCreateRequest request) {
 
-        Post post = postRepository.findByPostId(postId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST));
+        Post post = postRepository.findByPostId(postId) // 게시글 조회
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST)); // 없으면 예외
 
-        Profile profile = profileRepository.findById(sessionUser.getUserId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+        Profile profile = profileRepository.findById(sessionUser.getUserId()) // 작성자 프로필 조회
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE)); // 없으면 예외
 
-        Comment comment;
+        Comment comment; // 댓글 객체 생성 준비
 
-        if (parentId == null) {
+        if (parentId == null) { // 부모 댓글이 없는 경우(일반 댓글)
 
-            comment = new Comment(post, profile, null, request.getContent());
+            comment = new Comment(post, profile, null, request.getContent()); // 일반 댓글 생성
 
-        } else {
+        } else { // 대댓글인 경우
 
-            boolean parentCommentExistence = commentRepository.existsById(parentId);
+            boolean parentCommentExistence = commentRepository.existsById(parentId); // 부모 댓글 존재 여부 확인
 
-            if (parentCommentExistence) comment = new Comment(post, profile, parentId, request.getContent());
-            else comment = new Comment(post, profile, null, request.getContent());
+            if (parentCommentExistence) comment = new Comment(post, profile, parentId, request.getContent()); // 부모 댓글 존재 시 대댓글 생성
+            else comment = new Comment(post, profile, null, request.getContent()); // 존재하지 않으면 일반 댓글로 처리
         }
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment); // 댓글 저장
 
-        CommentCreateResponse dto = CommentCreateResponse.from(savedComment);
+        CommentCreateResponse dto = CommentCreateResponse.from(savedComment); // DTO 변환
 
-        return new CommonResponse<>(HttpStatus.CREATED, dto);
+        return new CommonResponse<>(HttpStatus.CREATED, dto); // 생성 완료 응답
     }
 
-    // 특정 게시글 댓글 리스트 조회 (공개 조회이므로 작성자 검증 생략; 전체 댓글 리스트 반환)
-    @Transactional(readOnly = true)
+    // 특정 게시글 댓글 리스트 조회 (공개 조회)
+    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public CommonResponse<List<CommentGetResponse>> getComments(Long postId) {
 
-        Post post = postRepository.findByPostId(postId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST));
+        Post post = postRepository.findByPostId(postId) // 게시글 조회
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST)); // 없으면 예외
 
-        List<Comment> allComments = commentRepository.findByPost_PostId(post.getPostId());
+        List<Comment> allComments = commentRepository.findByPost_PostId(post.getPostId()); // 해당 게시글의 전체 댓글 조회
 
         List<CommentGetResponse> dtos = allComments.stream()
-                .map(CommentGetResponse::from)
-                .collect(Collectors.toList());
+                .map(CommentGetResponse::from) // 엔티티 → DTO 변환
+                .collect(Collectors.toList()); // 리스트로 수집
 
-        return new CommonResponse<>(HttpStatus.OK, dtos);
+        return new CommonResponse<>(HttpStatus.OK, dtos); // 성공 응답
     }
 
     // 댓글 수정 (작성자 검증 포함)
     @Transactional
     public CommonResponse<CommentUpdateResponse> updateComment(SessionUser sessionUser, Long commentId, CommentUpdateRequest request) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser);
+        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser); // 권한 확인 및 댓글 조회
 
-        comment.updateContent(request.getContent());  // 엔티티 update 메서드 호출 가정
+        comment.updateContent(request.getContent()); // 댓글 내용 수정
 
-        Comment updatedComment = commentRepository.save(comment);
+        CommentUpdateResponse dto = CommentUpdateResponse.from(comment); // 수정된 엔티티 그대로 DTO 변환
 
-        CommentUpdateResponse dto = CommentUpdateResponse.from(updatedComment);
-
-        return new CommonResponse<>(HttpStatus.OK, dto);
+        return new CommonResponse<>(HttpStatus.OK, dto); // 성공 응답
     }
 
     // 댓글 삭제 (작성자 검증 포함)
     @Transactional
     public CommonResponse<Void> deleteComment(Long commentId, SessionUser sessionUser) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser);
+        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser); // 작성자 검증 후 댓글 조회
 
-        commentRepository.delete(comment);
 
-        return new CommonResponse<>(HttpStatus.NO_CONTENT, null);
+        commentRepository.delete(comment); // 댓글 삭제
+
+        return new CommonResponse<>(HttpStatus.NO_CONTENT, null); // 응답 본문 없음
     }
 
-    // 작성자 검증 (공통 메서드: 조회/수정/삭제에서 재사용)
+    // 작성자 검증 (조회/수정/삭제에서 공통 사용)
     private Comment getCommentByIdAndSessionUser(Long commentId, SessionUser sessionUser) {
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT));
+        Comment comment = commentRepository.findById(commentId) // 댓글 조회
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT)); // 없으면 예외
 
-        if (!comment.getProfile().getProfileId().equals(sessionUser.getUserId())) {
-            throw new CustomException(ExceptionCode.ACCESS_DENIED);  // 권한 없음: ACCESS_DENIED 사용
+        if (!comment.getProfile().getProfileId().equals(sessionUser.getUserId())) { // 작성자 본인인지 검증
+            throw new CustomException(ExceptionCode.ACCESS_DENIED); // 권한 없음
         }
-        return comment;
+        return comment; // 검증 통과 후 반환
     }
 }

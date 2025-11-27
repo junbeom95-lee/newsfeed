@@ -29,11 +29,18 @@ public enum ExceptionCode {
     ALREADY_JOINED(HttpStatus.BAD_REQUEST, "이미 해당 커뮤니티에 가입 중입니다."),
     NOT_JOINED(HttpStatus.BAD_REQUEST, "해당 커뮤니티에 가입되어 있지 않습니다."),
 
+    // 좋아요
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요가 되어있습니다."),
+    NOT_LIKED(HttpStatus.BAD_REQUEST, "좋아요가 되어있지 않습니다."),
+
     //인증
     NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED,  "로그인이 되어 있지 않습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN,  "해당 작업을 수행할 권한이 없습니다."),
     ALREADY_LOGGED_IN(HttpStatus.CONFLICT, "이미 로그인이 되어 있습니다."),
-;
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다"),
+    SAME_PASSWORD(HttpStatus.BAD_REQUEST, "같은 비밀번호로 수정할 수 없습니다.");
+
+
     private final HttpStatus status;
     private final String message;
 

@@ -16,6 +16,7 @@ public class CommentUpdateResponse {
     private String postTitle; // 댓글이 달린 게시글 제목
     private String postContent; // 댓글이 달린 게시글 내용
     private String profileName; // 댓글 작성자 프로필 이름
+    private Long likeCount;
     private LocalDateTime modifiedAt; // 댓글 수정 시간
 
     public static CommentUpdateResponse from(Comment comment) { // Comment 엔티티 → DTO 변환
@@ -25,6 +26,7 @@ public class CommentUpdateResponse {
                 comment.getPost().getTitle(), // 게시글 제목
                 comment.getPost().getContent(), // 게시글 내용
                 comment.getProfile().getName(), // 작성자 이름
+                comment.getLikeCount(),
                 comment.getModifiedAt() // 수정 시간
         );
     }

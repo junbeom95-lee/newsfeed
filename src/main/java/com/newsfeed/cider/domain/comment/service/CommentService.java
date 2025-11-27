@@ -6,7 +6,7 @@ import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
+import com.newsfeed.cider.common.util.AuthManager;
 import com.newsfeed.cider.domain.comment.model.request.CommentCreateRequest;
 import com.newsfeed.cider.domain.comment.model.request.CommentUpdateRequest;
 import com.newsfeed.cider.domain.comment.model.response.CommentCreateResponse;
@@ -33,13 +33,13 @@ public class CommentService {
     private final ProfileRepository profileRepository; // 프로필 관련 DB 접근
 
     // 댓글 등록
-    public CommonResponse<CommentCreateResponse> createComment(SessionUser sessionUser, Long postId, Long parentId, CommentCreateRequest request) {
+    public CommonResponse<CommentCreateResponse> createComment(Long userId, Long postId, Long parentId, CommentCreateRequest request) {
 
         Post post = postRepository.findByPostId(postId) // 게시글 조회
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST)); // 없으면 예외
 
-        Profile profile = profileRepository.findById(sessionUser.getUserId()) // 작성자 프로필 조회
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE)); // 없으면 예외
+        Profile profile = profileRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
         Comment comment; // 댓글 객체 생성 준비
 
@@ -80,11 +80,11 @@ public class CommentService {
 
     // 댓글 수정 (작성자 검증 포함)
     @Transactional
-    public CommonResponse<CommentUpdateResponse> updateComment(SessionUser sessionUser, Long commentId, CommentUpdateRequest request) {
+    public CommonResponse<CommentUpdateResponse> updateComment(Long userId, Long commentId, CommentUpdateRequest request) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser); // 권한 확인 및 댓글 조회
+        Comment comment = getCommentByIdAndSessionUser(commentId, userId);
 
-        comment.updateContent(request.getContent()); // 댓글 내용 수정
+        comment.updateContent(request.getContent());  // 엔티티 update 메서드 호출 가정
 
         CommentUpdateResponse dto = CommentUpdateResponse.from(comment); // 수정된 엔티티 그대로 DTO 변환
 
@@ -93,9 +93,9 @@ public class CommentService {
 
     // 댓글 삭제 (작성자 검증 포함)
     @Transactional
-    public CommonResponse<Void> deleteComment(Long commentId, SessionUser sessionUser) {
+    public CommonResponse<Void> deleteComment(Long commentId, Long userId) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser); // 작성자 검증 후 댓글 조회
+        Comment comment = getCommentByIdAndSessionUser(commentId, userId);
 
 
         commentRepository.delete(comment); // 댓글 삭제
@@ -103,15 +103,14 @@ public class CommentService {
         return new CommonResponse<>(HttpStatus.NO_CONTENT, null); // 응답 본문 없음
     }
 
-    // 작성자 검증 (조회/수정/삭제에서 공통 사용)
-    private Comment getCommentByIdAndSessionUser(Long commentId, SessionUser sessionUser) {
+    // 작성자 검증 (공통 메서드: 조회/수정/삭제에서 재사용)
+    private Comment getCommentByIdAndSessionUser(Long commentId, Long userId) {
 
         Comment comment = commentRepository.findById(commentId) // 댓글 조회
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT)); // 없으면 예외
 
-        if (!comment.getProfile().getProfileId().equals(sessionUser.getUserId())) { // 작성자 본인인지 검증
-            throw new CustomException(ExceptionCode.ACCESS_DENIED); // 권한 없음
-        }
-        return comment; // 검증 통과 후 반환
+        AuthManager.validateAuthorization(commentId, userId);
+
+        return comment;
     }
 }

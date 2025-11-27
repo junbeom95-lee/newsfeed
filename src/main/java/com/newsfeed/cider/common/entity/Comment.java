@@ -6,8 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Entity
 @Table(name = "comment")
@@ -33,6 +31,9 @@ public class Comment extends BaseEntity{
     @Column(nullable = false)
     private String content;             //댓글 내용
 
+    @Column
+    private Long likeCount = 0L;        //좋아요 개수
+
     public void updateContent(String content) {
         this.content = content;
     }
@@ -44,4 +45,13 @@ public class Comment extends BaseEntity{
         this.content = content;
     }
 
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
 }

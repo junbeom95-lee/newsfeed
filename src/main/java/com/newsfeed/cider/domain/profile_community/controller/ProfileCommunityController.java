@@ -1,10 +1,7 @@
 package com.newsfeed.cider.domain.profile_community.controller;
 
 
-import com.newsfeed.cider.common.enums.ExceptionCode;
-import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.profile_community.model.response.CommunityMemberResponse;
 import com.newsfeed.cider.domain.profile_community.model.response.UserCommunityResponse;
 import com.newsfeed.cider.domain.profile_community.service.ProfileCommunityService;
@@ -23,8 +20,8 @@ public class ProfileCommunityController {
     //커뮤니티 가입
     @PostMapping("/community/{communityId}/join")
     public ResponseEntity<CommonResponse<Void>> joinCommunity(@PathVariable Long communityId,
-                                                              @SessionAttribute(name = "loginUser", required = false)SessionUser sessionUser){
-        profileCommunityService.createJoin(sessionUser.getUserId(), communityId);
+                                                              @SessionAttribute(name = "loginId") Long userId){
+        profileCommunityService.createJoin(userId, communityId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponse<>(HttpStatus.CREATED, null));
     }
@@ -32,8 +29,8 @@ public class ProfileCommunityController {
     //커뮤니티 탈퇴
     @DeleteMapping("/community/{communityId}/withdrawal")
     public ResponseEntity<CommonResponse<Void>> withdrawal(@PathVariable Long communityId,
-                                                           @SessionAttribute(name = "loginUser", required = false)SessionUser sessionUser){
-        profileCommunityService.deleteJoin(sessionUser.getUserId(), communityId);
+                                                           @SessionAttribute(name = "loginId") Long userId){
+        profileCommunityService.deleteJoin(userId, communityId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, null));
 

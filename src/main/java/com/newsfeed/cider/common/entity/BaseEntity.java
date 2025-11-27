@@ -15,8 +15,8 @@ public abstract class BaseEntity {  // 공용으로 사용할 속성들을 모�
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt;    //생성일
 
     @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    private LocalDateTime modifiedAt;   //수정일
 }

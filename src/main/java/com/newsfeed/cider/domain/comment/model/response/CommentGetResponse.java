@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CommentGetResponse {
     private Long commentId;//댓글ID
     private String content;//댓글내용
     private String postTitle;//해당 댓글이 속한 게시글의 제목.
     private String postContent;//해당 댓글이 속한 게시글의 내용.
     private String profileName;//댓글 작성자 이름
+    private Long likeCount;
     private Long parentId; //부모댓글 ID
     private LocalDateTime createdAt; //댓글작성시간
     private LocalDateTime modifiedAt;//댓글수정시간
@@ -35,6 +35,7 @@ public class CommentGetResponse {
                 comment.getPost().getTitle(),
                 comment.getPost().getContent(),
                 comment.getProfile().getName(),
+                comment.getLikeCount(),
                 comment.getParentId(),
                 comment.getCreatedAt(),
                 comment.getModifiedAt()

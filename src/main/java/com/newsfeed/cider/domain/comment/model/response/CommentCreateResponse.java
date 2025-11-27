@@ -20,6 +20,7 @@ public class CommentCreateResponse {
     private String postTitle;// 댓글이 달린 게시글 제목
     private String postContent;// 댓글이 달린 게시글 내용
     private String profileName;// 댓글 작성자 프로필 이름
+    private Long likeCount;
     private Long parentId;// 부모 댓글 아이디
     private LocalDateTime createdAt;// 댓글 생성 일자
     /**
@@ -36,6 +37,7 @@ public class CommentCreateResponse {
                 comment.getPost().getContent(),
                 comment.getContent(),
                 comment.getProfile().getName(),
+                comment.getLikeCount(),
                 comment.getParentId(),
                 comment.getCreatedAt());
     }

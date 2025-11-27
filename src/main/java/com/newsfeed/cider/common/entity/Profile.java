@@ -31,7 +31,7 @@ public class Profile extends BaseEntity {
     private String password;            //비밀번호
 
     @Column(name = "is_private")
-    private Boolean isPrivate = false;           //비공개 설정(기본값: 공개)
+    private Boolean isPrivate = false;  //비공개 설정(기본값: 공개)
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;    //삭제 여부 및 시점
@@ -46,9 +46,11 @@ public class Profile extends BaseEntity {
         this.isPrivate = isPrivate;
     }
 
-    public void updateProfileInfo(String profilename, String email) {
-        this.name = profilename;
-        this.email = email;
+    public void updateProfileName(String profileName) {
+        this.name = profileName;
+    }
+    public void updateProfileEmail(String Email) {
+        this.email = Email;
     }
 
     public void updatePassword(String encodedPassword) {

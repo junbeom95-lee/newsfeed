@@ -15,7 +15,7 @@ public class ProfileCreateRequest {
 
     @NotBlank
     @Size(max = 4)
-    private String profilename;
+    private String profileName;
 
     @NotBlank
     @Size(min = 6)

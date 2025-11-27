@@ -13,10 +13,16 @@ public class ProfileUpdateRequest {
 
     @NotBlank
     @Size(max = 4)
-    private String profilename;
+    private String profileName;
+
     @Email
     private String email;
+
     @NotBlank
     @Size(min = 6)
     private String password;
+
+    @Size(min = 6)
+    private String newPassword; //비밀번호 수정 시
+
 }

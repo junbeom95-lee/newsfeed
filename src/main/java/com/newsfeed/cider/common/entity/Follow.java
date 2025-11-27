@@ -22,19 +22,19 @@ public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "follow_id")
-    private Long followId;
+    private Long followId;          //팔로우 고유 ID
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "follower_id", nullable = false)
-    private Profile follower;
+    private Profile follower;       //팔로우 하는 사람
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "followee_id", nullable = false)
-    private Profile followee;
+    private Profile followee;       //팔로우 당하는 사람
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private FollowStatus status;
+    private FollowStatus status;    //현재 상태
 
     public Follow(Profile follower, Profile followee, FollowStatus followStatus) {
         this.follower = follower;

@@ -1,12 +1,10 @@
 package com.newsfeed.cider.domain.profile.controller;
 
 
-import com.newsfeed.cider.common.enums.ExceptionCode;
-import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
+import com.newsfeed.cider.domain.profile.model.request.ProfileDeleteRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
@@ -30,8 +28,9 @@ public class ProfileController {
     //프로필 정보 보기
     @GetMapping("/profile/{profileId}")
     public ResponseEntity<CommonResponse<ProfileReadResponse>> getProfile(@PathVariable Long profileId,
-                                                                          @SessionAttribute(name = "loginUser", required = false ) SessionUser sessionUser) {
-        Long nowLoginProfileId = (sessionUser != null) ? sessionUser.getUserId() : null;
+                                                                          @SessionAttribute(name = "loginId", required = false) Long userId) {
+
+        Long nowLoginProfileId = (userId != null) ? userId : null;
 
         ProfileReadResponse response = profileService.getProfile(profileId, nowLoginProfileId);
 
@@ -49,27 +48,27 @@ public class ProfileController {
     //정보 수정
     @PutMapping("/profile/{profileId}")
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfile(@PathVariable Long profileId,
-                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+                                                                               @SessionAttribute(name = "loginId") Long userId,
                                                                                @RequestBody ProfileUpdateRequest request){
 
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfile(sessionUser.getUserId(), profileId, request)));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfile(userId, profileId, request)));
     }
 
     //계정 공개 설정
     @PutMapping("/profile/{profileId}/public")
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePublic(@PathVariable Long profileId,
-                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+                                                                               @SessionAttribute(name = "loginId") Long userId){
 
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePublic(sessionUser.getUserId(), profileId)));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePublic(userId, profileId)));
     }
 
     //계정 비공개 설정
     @PutMapping("/profile/{profileId}/private")
     public ResponseEntity<CommonResponse<ProfileUpdateResponse>> updateProfilePrivate(@PathVariable Long profileId,
-                                                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser){
+                                                                               @SessionAttribute(name = "loginId") Long userId){
 
 
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePrivate(sessionUser.getUserId(), profileId)));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, profileService.updateProfilePrivate(userId, profileId)));
     }
 
 
@@ -84,8 +83,10 @@ public class ProfileController {
     //로그인
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<Void>> login(@RequestBody LoginRequest request, HttpSession session){
-        SessionUser sessionUser = profileService.login(request);
-        session.setAttribute("loginUser", sessionUser);
+
+        Long userId = profileService.login(request);
+
+        session.setAttribute("loginId", userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, null));
 
@@ -93,15 +94,14 @@ public class ProfileController {
 
     //로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<CommonResponse<Void>> logout(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-            HttpSession session){
+    public ResponseEntity<CommonResponse<Void>> logout(HttpSession session){
 
-        if(sessionUser == null){
+        if(session.getAttribute("loginId") == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse<>(HttpStatus.BAD_REQUEST, null));
         }
 
         session.invalidate();
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new CommonResponse<>(HttpStatus.NO_CONTENT, null));
 
     }
@@ -109,10 +109,14 @@ public class ProfileController {
     //회원탈퇴
     @DeleteMapping("/profile/{profileId}")
     public ResponseEntity<CommonResponse<Void>> deleteProfile(
-            @PathVariable Long profileId, @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @PathVariable Long profileId,
+            @Valid @RequestBody ProfileDeleteRequest request,
             HttpSession session){
 
-        profileService.deleteProfile(sessionUser.getUserId(), profileId);
+        Long userId = (Long) session.getAttribute("loginId");
+
+        profileService.deleteProfile(userId, profileId, request);
+
         session.invalidate();
 
         return ResponseEntity.status(HttpStatus.OK)

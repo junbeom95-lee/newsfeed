@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProfileReadResponse {
     private Long profileId;
-    private String profilename;
+    private String profileName;
     private String email;
     private LocalDateTime createdAt;
     private Boolean isPrivate;

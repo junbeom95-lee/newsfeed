@@ -4,6 +4,7 @@ package com.newsfeed.cider.domain.profile.controller;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
+import com.newsfeed.cider.domain.profile.model.request.ProfileDeleteRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
@@ -109,10 +110,12 @@ public class ProfileController {
     @DeleteMapping("/profile/{profileId}")
     public ResponseEntity<CommonResponse<Void>> deleteProfile(
             @PathVariable Long profileId,
-            @SessionAttribute(name = "loginId") Long userId,
+            @Valid @RequestBody ProfileDeleteRequest request,
             HttpSession session){
 
-        profileService.deleteProfile(userId, profileId);
+        Long userId = (Long) session.getAttribute("loginId");
+
+        profileService.deleteProfile(userId, profileId, request);
 
         session.invalidate();
 

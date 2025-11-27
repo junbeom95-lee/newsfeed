@@ -110,13 +110,13 @@ public class PostController {
     }
 
     // 단건 Post 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/{postId:\\d+}")
     public ResponseEntity<CommonResponse<PostGetResponse>> getPost(@PathVariable Long postId) {
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse<>(HttpStatus.OK, postService.getOnePost(postId)));
     }
 
     // 특정 그룹에 대한 게시글 페이징 조회
-    @GetMapping("/{communityName}")
+    @GetMapping("/{communityName:[a-zA-Z]+}")
     public ResponseEntity<CommonResponse<PagedModel<PostGetResponse>>> getPost(
             @PathVariable String communityName,
             @RequestParam(defaultValue = "0") int page,

@@ -37,8 +37,9 @@ public class CommunityService {
 
     /**
      * 그룹 생성
+     * @param userId 로그인된 아이디
      * @param request CreateCommunityRequest (communityName, info)
-     * @return CommonResponse<CreateCommunityResponse> (communityId, communityName, info, createdAt)
+     * @return CommonResponse<CommunityCreateResponse> (communityId, communityName, info, profileId, createdAt)
      * @throws CustomException EXIST_COMMUNITY
      */
     public CommonResponse<CommunityCreateResponse> create(Long userId, CommunityCreateRequest request) {

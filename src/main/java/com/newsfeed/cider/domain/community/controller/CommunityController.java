@@ -23,8 +23,9 @@ public class CommunityController {
 
     /**
      * 커뮤니티 그룹 생성
-     * @param request CreateCommunityRequest (communityName, info)
-     * @return CreateCommunityResponse (communityId, communityName, info, createdAt)
+     * @param userId 로그인된 아이디
+     * @param request CommunityCreateRequest (communityName, info)
+     * @return CommunityCreateResponse (communityId, communityName, info, profileId, createdAt)
      */
     @PostMapping()
     public ResponseEntity<CommonResponse<CommunityCreateResponse>> create(
@@ -40,7 +41,7 @@ public class CommunityController {
      * 그룹 조회 페이징
      * @param page 페이지 번호
      * @param size 페이지 크기
-     * @return PagedModel<GetCommunityResponse>> (communityId, communityName, info, createdAt)
+     * @return PagedModel<CommunityGetResponse>> (communityId, communityName, info, createdAt)
      */
     @GetMapping()
     public ResponseEntity<CommonResponse<PagedModel<CommunityGetResponse>>> getCommunityPage(
@@ -53,7 +54,7 @@ public class CommunityController {
     }
 
     /**
-     *
+     * 특정 그룹 조회
      * @param communityName
      * @return CommunityGetOneResponse (communityId, communityName, info, countPost, createdAt)
      */
@@ -68,9 +69,10 @@ public class CommunityController {
 
     /**
      * 그룹 수정
+     * @param userId 로그인된 아이디
      * @param communityName 커뮤니티 그룹 이름
-     * @param request UpdateCommunityRequest (communityName, info)
-     * @return UpdateCommunityResponse (communityId, communityName, info, createdAt)
+     * @param request CommunityUpdateRequest (communityName, info)
+     * @return CommunityUpdateResponse (communityId, communityName, info, createdAt)
      */
     @PutMapping("/{communityName}")
     public ResponseEntity<CommonResponse<CommunityUpdateResponse>> update(
@@ -85,6 +87,7 @@ public class CommunityController {
 
     /**
      * 그룹 삭제
+     * @param userId 로그인된 아이디
      * @param communityName 커뮤니티 그룹 이름
      * @return OK, null
      */

@@ -125,15 +125,17 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public ProfileReadResponse getProfile(Long profileId, Long nowLoginProfileId){
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
-
-        //공개 계정
-        if(!profile.getIsPrivate()){
-            return ProfileReadResponse.from(profile);
-        }
-
         //내 계정 조회
         if (nowLoginProfileId != null && nowLoginProfileId.equals(profileId)){
             return ProfileReadResponse.from(profile);
+        }
+
+        ProfileReadResponse response = ProfileReadResponse.from(profile);
+        response.setEmail(null);
+
+        //공개 계정
+        if(!profile.getIsPrivate()){
+            return response;
         }
 
         //로그인 x, 비공개 계정 조회
@@ -147,7 +149,7 @@ public class ProfileService {
         if(!isFollower){
             throw new CustomException(ExceptionCode.FORBIDDEN);
         }
-        return ProfileReadResponse.from(profile);
+        return response;
 
     }
 

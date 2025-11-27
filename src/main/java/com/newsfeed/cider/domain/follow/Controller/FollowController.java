@@ -1,7 +1,6 @@
 package com.newsfeed.cider.domain.follow.Controller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.follow.Service.FollowService;
 import com.newsfeed.cider.domain.follow.model.response.FollowRequestResponse;
 import com.newsfeed.cider.domain.follow.model.response.FollowResponse;
@@ -24,9 +23,9 @@ public class FollowController {
     // - Follow
     @PostMapping("/{followeeId}/follow")
     public ResponseEntity<CommonResponse<FollowResponse>> follow(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long followeeId) {
-        Long followerId = loginUser.getUserId();
+        Long followerId = userId;
         FollowResponse result = followService.follow(followerId, followeeId);
 
         CommonResponse<FollowResponse> response =
@@ -37,9 +36,9 @@ public class FollowController {
     // - UnFollow
     @DeleteMapping("/{followeeId}/unfollow")
     public ResponseEntity<CommonResponse<FollowResponse>> unfollow(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long followeeId) {
-        Long loginUserId = loginUser.getUserId();
+        Long loginUserId = userId;
         FollowResponse result = followService.unfollow(loginUserId, followeeId);
 
         CommonResponse<FollowResponse> response =
@@ -60,8 +59,8 @@ public class FollowController {
     // - Get My Following List
     @GetMapping("/me/following")
     public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getMyFollowingList(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser) {
-        Long loginUserId = loginUser.getUserId();
+            @SessionAttribute(name = "loginId") Long userId) {
+        Long loginUserId = userId;
         List<SummaryProfileResponse> result = followService.getMyFollowingList(loginUserId);
 
         CommonResponse<List<SummaryProfileResponse>> response =
@@ -72,8 +71,8 @@ public class FollowController {
     // - Get My Follower List
     @GetMapping("/me/follower")
     public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getMyFollowerList(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser) {
-        Long loginUserId = loginUser.getUserId();
+            @SessionAttribute(name = "loginId") Long userId) {
+        Long loginUserId = userId;
         List<SummaryProfileResponse> result = followService.getMyFollowerList(loginUserId);
 
         CommonResponse<List<SummaryProfileResponse>> response =
@@ -84,9 +83,9 @@ public class FollowController {
     // - Get AnotherProfile Following List
     @GetMapping("/{profileId}/following")
     public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getOtherFollowingList(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long profileId) {
-        Long loginUserId = loginUser.getUserId();
+        Long loginUserId = userId;
         List<SummaryProfileResponse> result = followService.getOtherFollowingList(loginUserId, profileId);
 
         CommonResponse<List<SummaryProfileResponse>> response =
@@ -97,9 +96,9 @@ public class FollowController {
     // - Get AnotherProfile Follower List
     @GetMapping("/{profileId}/follower")
     public ResponseEntity<CommonResponse<List<SummaryProfileResponse>>> getOtherFollowerList(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long profileId) {
-        Long loginUserId = loginUser.getUserId();
+        Long loginUserId = userId;
         List<SummaryProfileResponse> result = followService.getOtherFollowerList(loginUserId, profileId);
 
         CommonResponse<List<SummaryProfileResponse>> response =
@@ -110,9 +109,9 @@ public class FollowController {
     // - Check Followed
     @GetMapping("/{followeeId}/isFollow")
     public ResponseEntity<CommonResponse<Boolean>> getIsFollowed(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long followeeId) {
-        Long loginUserId = loginUser.getUserId();
+        Long loginUserId = userId;
         boolean result = followService.getIsFollowed(loginUserId, followeeId);
 
         CommonResponse<Boolean> response =
@@ -123,8 +122,8 @@ public class FollowController {
     // - Get FollowRequestList
     @GetMapping("/me/followrequests")
     public ResponseEntity<CommonResponse<List<FollowRequestResponse>>> getFollowRequests(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser) {
-        Long loginUserId = loginUser.getUserId();
+            @SessionAttribute(name = "loginId") Long userId) {
+        Long loginUserId = userId;
         List<FollowRequestResponse> result = followService.getFollowRequestList(loginUserId);
 
         CommonResponse<List<FollowRequestResponse>> response =
@@ -135,9 +134,9 @@ public class FollowController {
     // - FollowRequest Accept
     @PutMapping("/followrequest/{followId}/accept")
     public ResponseEntity<CommonResponse<FollowResponse>> acceptFollow(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long followId) {
-        Long loginUserId = loginUser.getUserId();
+        Long loginUserId = userId;
         FollowResponse result = followService.approveFollowRequest(loginUserId, followId);
 
         CommonResponse<FollowResponse> response =
@@ -148,9 +147,9 @@ public class FollowController {
     // - FollowRequest Reject
     @PutMapping("/followrequest/{followId}/reject")
     public ResponseEntity<CommonResponse<FollowResponse>> rejectFollow(
-            @SessionAttribute(name = "loginUser") SessionUser loginUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long followId) {
-        Long loginUserId = loginUser.getUserId();
+        Long loginUserId = userId;
         FollowResponse result = followService.rejectFollowRequest(loginUserId, followId);
 
         CommonResponse<FollowResponse> response =

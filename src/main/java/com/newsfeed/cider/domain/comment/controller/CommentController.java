@@ -1,7 +1,6 @@
 package com.newsfeed.cider.domain.comment.controller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.comment.model.request.CommentCreateRequest;
 import com.newsfeed.cider.domain.comment.model.request.CommentUpdateRequest;
 import com.newsfeed.cider.domain.comment.model.response.CommentCreateResponse;
@@ -23,12 +22,12 @@ public class CommentController {
     // 댓글 작성
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommonResponse<CommentCreateResponse>> createComment(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,  // 일관성 위해 required=false
+            @SessionAttribute(name = "loginId") Long userId,  // 일관성 위해 required=false
             @PathVariable Long postId,
             @RequestParam(required = false) Long parentId,
             @RequestBody CommentCreateRequest request
     ) {
-        CommonResponse<CommentCreateResponse> result = commentService.createComment(sessionUser, postId, parentId, request);
+        CommonResponse<CommentCreateResponse> result = commentService.createComment(userId, postId, parentId, request);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
@@ -42,21 +41,21 @@ public class CommentController {
     // 댓글 수정
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<CommonResponse<CommentUpdateResponse>> updateComment(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @SessionAttribute(name = "loginUser") Long userId,
             @PathVariable Long commentId,
             @RequestBody CommentUpdateRequest request  // CommentRequestDto → CommentUpdateRequest
     ) {
-        CommonResponse<CommentUpdateResponse> result = commentService.updateComment(sessionUser, commentId, request);
+        CommonResponse<CommentUpdateResponse> result = commentService.updateComment(userId, commentId, request);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     // 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<CommonResponse<Void>> deleteComment(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable Long commentId
     ) {
-        CommonResponse<Void> result = commentService.deleteComment(commentId, sessionUser);
+        CommonResponse<Void> result = commentService.deleteComment(commentId, userId);
 
         return ResponseEntity.ok(result);
     }

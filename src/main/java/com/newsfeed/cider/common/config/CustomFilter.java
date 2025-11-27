@@ -3,7 +3,6 @@ package com.newsfeed.cider.common.config;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,13 +36,12 @@ public class CustomFilter extends OncePerRequestFilter {
 
             if (session != null) {
 
-                //4. 세션에서 loginUser 속성을 꺼냄
-                SessionUser loginUser = (SessionUser) session.getAttribute("loginUser");
+                //4. 세션에서 loginId 속성을 꺼냄
+                Long userId = (Long) session.getAttribute("loginId");
 
-                if (loginUser != null) {
+                if (userId != null) {
 
-                    //TEST용 Log id와 이메일 찍어보기 ** 지우셔도 좋습니다 **
-                    log.info("CustomFilter doFilterInternal login  id : {} email {}", loginUser.getUserId(), loginUser.getEmail());
+                    log.info("CustomFilter userId : {}", userId);
 
                     //다음 요청으로 넘어갈 수 있게 사용하는 메서드
                     filterChain.doFilter(request, response);

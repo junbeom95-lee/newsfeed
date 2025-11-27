@@ -1,12 +1,10 @@
 package com.newsfeed.cider.domain.community.service;
 
 import com.newsfeed.cider.common.entity.Community;
-import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
 import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
 import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
@@ -37,20 +35,19 @@ public class CommunityService {
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
 
-
     /**
      * 그룹 생성
      * @param request CreateCommunityRequest (communityName, info)
      * @return CommonResponse<CreateCommunityResponse> (communityId, communityName, info, createdAt)
      * @throws CustomException EXIST_COMMUNITY
      */
-    public CommonResponse<CommunityCreateResponse> create(SessionUser sessionUser, CommunityCreateRequest request) {
+    public CommonResponse<CommunityCreateResponse> create(Long userId, CommunityCreateRequest request) {
 
         boolean existence = communityRepository.existsByCommunityName(request.getCommunityName());
 
         if(existence) throw new CustomException(ExceptionCode.EXIST_COMMUNITY);
 
-        Profile profile = profileRepository.findById(sessionUser.getUserId()).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+        Profile profile = profileRepository.findById(userId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
         Community community = new Community(request.getCommunityName(), request.getInfo(), profile);
 
@@ -81,7 +78,7 @@ public class CommunityService {
     }
 
     /**
-     * 게시글 페이징 포함한 단건 그룹 조회
+     * 단건 그룹 조회
      * @param communityName 그룹 이름
      * @return (communityId, communityName, info, countPost, createdAt)
      */
@@ -100,17 +97,17 @@ public class CommunityService {
 
     /**
      * 그룹 수정
-     * @param sessionUser 로그인된 세션
+     * @param userId 로그인된 아이디
      * @param communityName 그룹 이름
      * @param request UpdateCommunityRequest (communityName, info) 수정할 그룹 이름, 그룹 설명
      * @return UpdateCommunityResponse (communityId, communityName, info, createdAt)
      */
-    public CommonResponse<CommunityUpdateResponse> update(SessionUser sessionUser, String communityName, CommunityUpdateRequest request) {
+    public CommonResponse<CommunityUpdateResponse> update(Long userId, String communityName, CommunityUpdateRequest request) {
 
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
-        if (Objects.equals(community.getProfile().getProfileId(), sessionUser.getUserId())) {
+        if (Objects.equals(community.getProfile().getProfileId(), userId)) {
 
             community.update(request);
 
@@ -124,16 +121,16 @@ public class CommunityService {
 
     /**
      * 그룹 삭제
-     * @param sessionUser 로그인된 세션
+     * @param userId 로그인된 아이디
      * @param communityName 그룹 이름
      * @return CommonResponse<Void> OK, null
      */
-    public CommonResponse<Void> delete(SessionUser sessionUser, String communityName) {
+    public CommonResponse<Void> delete(Long userId, String communityName) {
 
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
-        if (Objects.equals(community.getProfile().getProfileId(), sessionUser.getUserId())) {
+        if (Objects.equals(community.getProfile().getProfileId(), userId)) {
 
             community.softDelete();
 

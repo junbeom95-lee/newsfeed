@@ -1,7 +1,6 @@
 package com.newsfeed.cider.domain.community.controller;
 
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
 import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
 import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
@@ -29,10 +28,10 @@ public class CommunityController {
      */
     @PostMapping()
     public ResponseEntity<CommonResponse<CommunityCreateResponse>> create(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @RequestBody @Valid CommunityCreateRequest request) {
 
-        CommonResponse<CommunityCreateResponse> result = communityService.create(sessionUser, request);
+        CommonResponse<CommunityCreateResponse> result = communityService.create(userId, request);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -75,11 +74,11 @@ public class CommunityController {
      */
     @PutMapping("/{communityName}")
     public ResponseEntity<CommonResponse<CommunityUpdateResponse>> update(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable String communityName,
             @RequestBody @Valid CommunityUpdateRequest request) {
 
-        CommonResponse<CommunityUpdateResponse> result = communityService.update(sessionUser, communityName, request);
+        CommonResponse<CommunityUpdateResponse> result = communityService.update(userId, communityName, request);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -91,10 +90,10 @@ public class CommunityController {
      */
     @DeleteMapping("/{communityName}")
     public ResponseEntity<CommonResponse<Void>> delete(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @SessionAttribute(name = "loginId") Long userId,
             @PathVariable String communityName) {
 
-        CommonResponse<Void> result = communityService.delete(sessionUser, communityName);
+        CommonResponse<Void> result = communityService.delete(userId, communityName);
 
         return ResponseEntity.status(result.getStatus()).body(result);
     }

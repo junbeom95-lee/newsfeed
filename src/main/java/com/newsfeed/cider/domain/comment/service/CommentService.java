@@ -6,7 +6,6 @@ import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.common.util.AuthManager;
 import com.newsfeed.cider.domain.comment.model.request.CommentCreateRequest;
 import com.newsfeed.cider.domain.comment.model.request.CommentUpdateRequest;
@@ -34,12 +33,12 @@ public class CommentService {
     private final ProfileRepository profileRepository;
 
     // 댓글 등록
-    public CommonResponse<CommentCreateResponse> createComment(SessionUser sessionUser, Long postId, Long parentId, CommentCreateRequest request) {
+    public CommonResponse<CommentCreateResponse> createComment(Long userId, Long postId, Long parentId, CommentCreateRequest request) {
 
         Post post = postRepository.findByPostId(postId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_POST));
 
-        Profile profile = profileRepository.findById(sessionUser.getUserId())
+        Profile profile = profileRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
         Comment comment;
@@ -81,9 +80,9 @@ public class CommentService {
 
     // 댓글 수정 (작성자 검증 포함)
     @Transactional
-    public CommonResponse<CommentUpdateResponse> updateComment(SessionUser sessionUser, Long commentId, CommentUpdateRequest request) {
+    public CommonResponse<CommentUpdateResponse> updateComment(Long userId, Long commentId, CommentUpdateRequest request) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser);
+        Comment comment = getCommentByIdAndSessionUser(commentId, userId);
 
         comment.updateContent(request.getContent());  // 엔티티 update 메서드 호출 가정
 
@@ -96,9 +95,9 @@ public class CommentService {
 
     // 댓글 삭제 (작성자 검증 포함)
     @Transactional
-    public CommonResponse<Void> deleteComment(Long commentId, SessionUser sessionUser) {
+    public CommonResponse<Void> deleteComment(Long commentId, Long userId) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, sessionUser);
+        Comment comment = getCommentByIdAndSessionUser(commentId, userId);
 
         commentRepository.delete(comment);
 
@@ -106,12 +105,12 @@ public class CommentService {
     }
 
     // 작성자 검증 (공통 메서드: 조회/수정/삭제에서 재사용)
-    private Comment getCommentByIdAndSessionUser(Long commentId, SessionUser sessionUser) {
+    private Comment getCommentByIdAndSessionUser(Long commentId, Long userId) {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT));
 
-        AuthManager.validateAuthorization(commentId, sessionUser.getUserId());
+        AuthManager.validateAuthorization(commentId, userId);
 
         return comment;
     }

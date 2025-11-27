@@ -5,7 +5,6 @@ import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.enums.FollowStatus;
 import com.newsfeed.cider.common.exception.CustomException;
-import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.common.util.PasswordEncoder;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
@@ -141,14 +140,15 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public SessionUser login(LoginRequest request){
+    public Long login(LoginRequest request){
+
         Profile profile = profileRepository.findByEmail(request.getEmail()).orElseThrow(() -> new CustomException(ExceptionCode.UN_AUTHORIZED));
 
         if(!passwordEncoder.matches(request.getPassword(), profile.getPassword())){
             throw new CustomException(ExceptionCode.UN_AUTHORIZED);
         }
 
-        return new SessionUser(profile.getProfileId(), profile.getEmail());
+        return profile.getProfileId();
     }
 
     @Transactional(readOnly = true)

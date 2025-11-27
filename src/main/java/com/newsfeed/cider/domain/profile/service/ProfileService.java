@@ -9,6 +9,7 @@ import com.newsfeed.cider.common.model.SessionUser;
 import com.newsfeed.cider.common.util.PasswordEncoder;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
+import com.newsfeed.cider.domain.profile.model.request.ProfileDeleteRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileUpdateRequest;
 import com.newsfeed.cider.domain.profile.model.response.ProfileCreateResponse;
 import com.newsfeed.cider.domain.profile.model.response.ProfileReadResponse;
@@ -39,7 +40,7 @@ public class ProfileService {
             throw new CustomException(ExceptionCode.EXIST_EMAIL);
         }
 
-        Profile profile = new Profile(request.getProfilename(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
+        Profile profile = new Profile(request.getProfileName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         profileRepository.save(profile);
 
         return ProfileCreateResponse.from(profile);
@@ -51,18 +52,32 @@ public class ProfileService {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
-        //isOwner(nowLoginProfileId, profile.getProfileId());
+
         validateAuthorization(nowLoginProfileId, profile.getProfileId());
 
-        profile.updateProfileInfo(request.getProfilename(), request.getEmail());
-
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            String encodedPassword = passwordEncoder.encode(request.getPassword());
-            profile.updatePassword(encodedPassword);
+        if(!passwordEncoder.matches(request.getPassword(), profile.getPassword())){
+            throw new CustomException(ExceptionCode.WRONG_PASSWORD);
         }
 
-        profileRepository.save(profile);
+        if(request.getProfileName() != null){
+            profile.updateProfileName(request.getProfileName());
+        }
 
+        if(request.getEmail() != null && !request.getEmail().isBlank()){
+            profile.updateProfileEmail(request.getEmail());
+        }
+
+        if(request.getNewPassword() != null){
+            if(passwordEncoder.matches(request.getNewPassword(), profile.getPassword())){
+                throw new CustomException(ExceptionCode.SAME_PASSWORD);
+            }
+
+            String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+            profile.updatePassword(encodedNewPassword);
+
+
+        }
+        profileRepository.save(profile);
         return ProfileUpdateResponse.from(profile);
     }
 
@@ -92,11 +107,15 @@ public class ProfileService {
 
 
 
-    public void deleteProfile(Long nowLoginProfileId, Long profileId){
+    public void deleteProfile(Long nowLoginProfileId, Long profileId, ProfileDeleteRequest request){
 
         Profile profile =  profileRepository.findById(profileId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
 
         validateAuthorization(nowLoginProfileId, profile.getProfileId());
+
+        if(!passwordEncoder.matches(request.getPassword(), profile.getPassword())){
+            throw new CustomException(ExceptionCode.WRONG_PASSWORD);
+        }
 
         profile.softDelete();
         profileRepository.save(profile);
@@ -117,7 +136,7 @@ public class ProfileService {
             return ProfileReadResponse.from(profile);
         }
 
-        //로그인 x 비공개 계정 조회
+        //로그인 x, 비공개 계정 조회
         if(nowLoginProfileId == null){
             throw new CustomException(ExceptionCode.FORBIDDEN);
         }
@@ -163,9 +182,4 @@ public class ProfileService {
         return followRepository.existsByFollowerAndFolloweeAndStatus(follower, followee, FollowStatus.ACCEPTED);
     }
 
-    /*void isOwner(long nowLoginProfileId, long profileId){
-        if(nowLoginProfileId != profileId){
-            throw new CustomException(ExceptionCode.FORBIDDEN);
-        }
-    }*/
 }

@@ -1,15 +1,12 @@
 package com.newsfeed.cider.domain.comment.model.response;
 
 import com.newsfeed.cider.common.entity.Comment;
-import com.newsfeed.cider.common.entity.Community;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor

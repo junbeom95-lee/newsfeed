@@ -1,14 +1,11 @@
 package com.newsfeed.cider.domain.comment.model.response;
 
 import com.newsfeed.cider.common.entity.Comment;
-import com.newsfeed.cider.common.entity.Community;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 /**
  * 댓글 조회 응답 DTO 클래스.
  * 댓글 엔티티(Comment)를 기반으로 클라이언트에게 반환할 데이터를 매핑합니다.

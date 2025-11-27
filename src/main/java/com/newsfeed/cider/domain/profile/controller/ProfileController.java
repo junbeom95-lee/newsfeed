@@ -1,6 +1,8 @@
 package com.newsfeed.cider.domain.profile.controller;
 
 
+import com.newsfeed.cider.common.enums.ExceptionCode;
+import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
 import com.newsfeed.cider.domain.profile.model.request.LoginRequest;
 import com.newsfeed.cider.domain.profile.model.request.ProfileCreateRequest;
@@ -75,7 +77,10 @@ public class ProfileController {
 
     //회원가입
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponse<ProfileCreateResponse>> createProfile(@Valid @RequestBody ProfileCreateRequest request){
+    public ResponseEntity<CommonResponse<ProfileCreateResponse>> createProfile(@Valid @RequestBody ProfileCreateRequest request,
+                                                                               @SessionAttribute(name = "loginId") Long userId){
+        if (userId != null) throw new CustomException(ExceptionCode.ALREADY_LOGGED_IN);
+
         ProfileCreateResponse response = profileService.createProfile(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponse<>(HttpStatus.CREATED, response));
     }
@@ -83,6 +88,8 @@ public class ProfileController {
     //로그인
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<Void>> login(@RequestBody LoginRequest request, HttpSession session){
+
+        if (session.getAttribute("loginId") != null) throw new CustomException(ExceptionCode.ALREADY_LOGGED_IN);
 
         Long userId = profileService.login(request);
 

@@ -5,6 +5,7 @@ import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.common.model.CommonResponse;
+import com.newsfeed.cider.common.util.AuthManager;
 import com.newsfeed.cider.domain.community.model.request.CommunityCreateRequest;
 import com.newsfeed.cider.domain.community.model.request.CommunityUpdateRequest;
 import com.newsfeed.cider.domain.community.model.response.CommunityCreateResponse;
@@ -23,8 +24,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -108,16 +107,13 @@ public class CommunityService {
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
-        if (Objects.equals(community.getProfile().getProfileId(), userId)) {
+        AuthManager.validateAuthorization(userId, community.getProfile().getProfileId());
 
-            community.update(request);
+        community.update(request);
 
-            CommunityUpdateResponse response = CommunityUpdateResponse.from(community);
+        CommunityUpdateResponse response = CommunityUpdateResponse.from(community);
 
-            return new CommonResponse<>(HttpStatus.OK, response);
-        }
-
-        throw new CustomException(ExceptionCode.ACCESS_DENIED);
+        return new CommonResponse<>(HttpStatus.OK, response);
     }
 
     /**
@@ -131,13 +127,10 @@ public class CommunityService {
         Community community = communityRepository.findByCommunityName(communityName).orElseThrow(
                 () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
 
-        if (Objects.equals(community.getProfile().getProfileId(), userId)) {
+        AuthManager.validateAuthorization(userId, community.getProfile().getProfileId());
 
-            community.softDelete();
+        community.softDelete();
 
-            return new CommonResponse<>(HttpStatus.OK, null);
-        }
-
-        throw new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY);
+        return new CommonResponse<>(HttpStatus.OK, null);
     }
 }

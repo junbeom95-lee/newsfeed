@@ -97,7 +97,6 @@ public class CommentService {
 
         Comment comment = getCommentByIdAndSessionUser(commentId, userId);
 
-
         commentRepository.delete(comment); // 댓글 삭제
 
         return new CommonResponse<>(HttpStatus.NO_CONTENT, null); // 응답 본문 없음

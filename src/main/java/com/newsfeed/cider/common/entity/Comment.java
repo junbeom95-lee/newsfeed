@@ -32,7 +32,7 @@ public class Comment extends BaseEntity{
     private String content;             //댓글 내용
 
     @Column
-    private Long likeCount = 0L;
+    private Long likeCount = 0L;        //좋아요 개수
 
     public void updateContent(String content) {
         this.content = content;

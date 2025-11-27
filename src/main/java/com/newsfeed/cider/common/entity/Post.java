@@ -30,7 +30,7 @@ public class Post extends BaseEntity {
     private String content;             //게시글 내용
 
     @Column
-    private Long likeCount = 0L;
+    private Long likeCount = 0L;        //좋아요 개수
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")

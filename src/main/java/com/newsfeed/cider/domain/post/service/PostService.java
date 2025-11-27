@@ -4,6 +4,7 @@ import com.newsfeed.cider.common.entity.Community;
 import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
 import com.newsfeed.cider.common.exception.CustomException;
+import com.newsfeed.cider.domain.comment.repository.CommentRepository;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
 import com.newsfeed.cider.domain.post.model.condition.PostSearchCond;
 import com.newsfeed.cider.domain.post.model.request.PostCreateRequest;
@@ -36,6 +37,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
     private final ProfileRepository profileRepository;
+    private final CommentRepository commentRepository;
 
     // Post 생성
     @Transactional
@@ -145,7 +147,7 @@ public class PostService {
         Post post = getPostById(postId);
         Long profileId = post.getProfile().getProfileId();
         validateAuthorization(loginId, profileId);
-
+        commentRepository.deleteByPost_PostId(postId);
         post.softDelete();
     }
 

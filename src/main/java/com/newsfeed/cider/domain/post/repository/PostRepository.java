@@ -4,6 +4,7 @@ import com.newsfeed.cider.common.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -36,4 +37,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
                     )
             """)
     Page<Post> findAllFollowedPostsByProfileId(@Param("profileId") Long profileId, Pageable pageable);
+
+    @Modifying
+    @Query("update Post p " + "set p.deletedAt = current_timestamp " + "where p.profile.profileId = :profileId")
+    void deleteByProfileId(@Param("profileId") Long profileId);
 }

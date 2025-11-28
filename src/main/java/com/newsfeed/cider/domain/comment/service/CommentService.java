@@ -82,7 +82,7 @@ public class CommentService {
     @Transactional
     public CommonResponse<CommentUpdateResponse> updateComment(Long userId, Long commentId, CommentUpdateRequest request) {
 
-        Comment comment = getCommentByIdAndSessionUser(commentId, userId);
+        Comment comment = getCommentByIdAndSessionUser(userId, commentId);
 
         comment.updateContent(request.getContent());  // 엔티티 update 메서드 호출 가정
 
@@ -103,13 +103,15 @@ public class CommentService {
     }
 
     // 작성자 검증 (공통 메서드: 조회/수정/삭제에서 재사용)
-    private Comment getCommentByIdAndSessionUser(Long commentId, Long userId) {
+    private Comment getCommentByIdAndSessionUser(Long userId, Long commentId) {
+
 
         Comment comment = commentRepository.findById(commentId) // 댓글 조회
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_COMMENT)); // 없으면 예외
 
-        AuthManager.validateAuthorization(commentId, userId);
+        Long commentProfileId = comment.getProfile().getProfileId();
 
+        AuthManager.validateAuthorization(commentProfileId, userId);
         return comment;
     }
 }

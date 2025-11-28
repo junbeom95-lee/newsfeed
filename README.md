@@ -80,6 +80,7 @@ https://www.instagram.com/
 ---
 ## 실행 화면
 
+### Notion -> https://www.notion.so/teamsparta/2b22dc3ef51481e58151e3235e113397
 
 ---
 ## 트러블 슈팅 기록

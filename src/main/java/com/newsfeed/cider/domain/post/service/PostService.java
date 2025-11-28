@@ -3,6 +3,7 @@ package com.newsfeed.cider.domain.post.service;
 import com.newsfeed.cider.common.entity.Community;
 import com.newsfeed.cider.common.entity.Post;
 import com.newsfeed.cider.common.entity.Profile;
+import com.newsfeed.cider.common.enums.ExceptionCode;
 import com.newsfeed.cider.common.exception.CustomException;
 import com.newsfeed.cider.domain.comment.repository.CommentRepository;
 import com.newsfeed.cider.domain.community.repository.CommunityRepository;
@@ -24,8 +25,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static com.newsfeed.cider.common.enums.ExceptionCode.NOT_FOUND_POST;
 import static com.newsfeed.cider.common.enums.ExceptionCode.NOT_FOUND_PROFILE;
 import static com.newsfeed.cider.common.util.AuthManager.validateAuthorization;
@@ -45,16 +44,18 @@ public class PostService {
 
         Profile profile = getProfile(loginId);
 
-        Optional<Community> community = Optional.empty();
+        Community community = null;
+
         if (request.getCommunityName() != null) {
-            community = communityRepository.findByCommunityName(request.getCommunityName());
+            community = communityRepository.findByCommunityName(request.getCommunityName()).orElseThrow(
+                    () -> new CustomException(ExceptionCode.NOT_FOUND_COMMUNITY));
         }
 
         Post post = new Post(
                 profile,
                 request.getTitle(),
                 request.getContent(),
-                community.orElse(null)
+                community
         );
 
         Post savedPost = postRepository.save(post);
